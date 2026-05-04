@@ -17,6 +17,9 @@ builder.Services.AddScoped<IFareCalculationService, FareCalculationService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IRentalService, RentalService>();
 builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IAdminAuthService, AdminAuthService>();
+builder.Services.AddScoped<IEncryptionService, EncryptionService>();
+builder.Services.AddScoped<IRentalTransactionService, RentalTransactionService>();
 
 var app = builder.Build();
 

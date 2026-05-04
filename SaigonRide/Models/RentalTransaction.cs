@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace SaigonRide.Models
 {
     public class RentalTransaction
     {
+        [Key]
         public int TransactionId { get; set; }
         public string EncryptedBankNumber { get; set; }
         public string EncryptedVehicleCode { get; set; }

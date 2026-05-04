@@ -1,4 +1,5 @@
 using SaigonRide.Data;
+using Microsoft.EntityFrameworkCore;
 using SaigonRide.Models;
 using System.Security.Cryptography;
 using System.Text;

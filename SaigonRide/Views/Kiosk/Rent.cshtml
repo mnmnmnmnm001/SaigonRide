@@ -1,0 +1,20 @@
+@model List<SaigonRide.Models.Vehicle>
+@{
+    ViewData["Title"] = "Rent Vehicle";
+}
+
+<h1>Available Vehicles</h1>
+<table class="table">
+    <thead><tr><th>Code</th><th>Type</th><th>FarePerMin</th><th></th></tr></thead>
+    <tbody>
+        @foreach(var v in Model)
+        {
+            <tr>
+                <td>@v.Code</td>
+                <td>@v.Type</td>
+                <td>@v.FarePerMin</td>
+                <td><a class="btn btn-sm btn-primary" asp-action="RentDetails" asp-route-id="@v.VehicleId">Choose</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

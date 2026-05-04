@@ -1,0 +1,8 @@
+@{
+    ViewData["Title"] = "Rent Result";
+}
+<h1>Rental Started</h1>
+<p>Vehicle Code: @ViewData["VehicleCode"]</p>
+<p>Minutes: @ViewData["Minutes"]</p>
+<p>Charged: @ViewData["MoneyRented"]</p>
+<a asp-action="Index" class="btn btn-primary">Home</a>

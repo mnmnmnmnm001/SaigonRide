@@ -1,0 +1,40 @@
+@model SaigonRide.Models.Vehicle
+@{
+    ViewData["Title"] = "Rent Vehicle";
+    var stations = ViewData["Stations"] as List<SaigonRide.Models.Station>;
+}
+
+<h1>Rent @Model.Code</h1>
+<form asp-action="ProcessRent" method="post">
+    <input type="hidden" name="vehicleId" value="@Model.VehicleId" />
+    <div class="mb-3">
+        <label>Start Station</label>
+        <select name="stationId" class="form-control">
+            @foreach(var s in stations)
+            {
+                <option value="@s.StationId">@s.Name (@s.CurrentCapacity/@s.MaxCapacity)</option>
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label>User Type</label>
+        <select name="userType" class="form-control">
+            <option value="LocalCommuter">Local</option>
+            <option value="ForeignTourist">Foreign</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label>Bank Number</label>
+        <input name="bankNum" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Passport (if foreign)</label>
+        <input name="passport" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Minutes</label>
+        <input type="number" name="minutes" class="form-control" value="30" />
+    </div>
+    <button class="btn btn-primary" type="submit">Confirm Rent</button>
+    <a asp-action="Rent" class="btn btn-secondary">Back</a>
+</form>

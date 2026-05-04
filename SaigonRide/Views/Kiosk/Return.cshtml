@@ -1,0 +1,22 @@
+@{
+    ViewData["Title"] = "Return Vehicle";
+    var stations = new List<SaigonRide.Models.Station>();
+}
+
+<h1>Return Vehicle</h1>
+<form asp-action="ProcessReturn" method="post">
+    <div class="mb-3">
+        <label>Vehicle Code</label>
+        <input name="vehicleCode" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Return Station</label>
+        <select name="returnStationId" class="form-control">
+            @foreach(var s in ViewBag.Stations as List<SaigonRide.Models.Station> ?? new List<SaigonRide.Models.Station>())
+            {
+                <option value="@s.StationId">@s.Name (@s.CurrentCapacity/@s.MaxCapacity)</option>
+            }
+        </select>
+    </div>
+    <button class="btn btn-primary" type="submit">Return</button>
+</form>

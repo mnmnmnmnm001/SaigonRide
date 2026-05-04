@@ -1,0 +1,64 @@
+@model SaigonRide.Models.Station
+
+@{
+    ViewData["Title"] = "Station Details";
+}
+
+<h1>Station Details</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>@Model.Name</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Station ID:</strong> @Model.StationId</p>
+                    <p><strong>Location:</strong> @Model.Latitude.ToString("F4"), @Model.Longitude.ToString("F4")</p>
+                    <p><strong>Current Capacity:</strong> @Model.CurrentCapacity</p>
+                    <p><strong>Max Capacity:</strong> @Model.MaxCapacity</p>
+                    <p><strong>Utilization Ratio:</strong> @string.Format("{0:P2}", Model.GetRatio())</p>
+                    <p>
+                        <strong>Status:</strong>
+                        @{
+                            double ratio = Model.GetRatio();
+                            if (ratio < 0.2)
+                            {
+                                <span class="badge bg-danger">Low Inventory</span>
+                            }
+                            else if (ratio < 0.5)
+                            {
+                                <span class="badge bg-warning">Medium</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">High</span>
+                            }
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Capacity Chart</h5>
+                </div>
+                <div class="card-body">
+                    <div class="progress" style="height: 50px;">
+                        <div class="progress-bar" role="progressbar" style="width: @string.Format("{0:P0}", Model.GetRatio())" aria-valuenow="@Model.CurrentCapacity" aria-valuemin="0" aria-valuemax="@Model.MaxCapacity">
+                            @string.Format("{0:P0}", Model.GetRatio())
+                        </div>
+                    </div>
+                    <p class="mt-2">@Model.CurrentCapacity vehicles out of @Model.MaxCapacity</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-3">
+        <a asp-action="Edit" asp-route-id="@Model.StationId" class="btn btn-warning">Edit</a>
+        <a asp-action="Delete" asp-route-id="@Model.StationId" class="btn btn-danger">Delete</a>
+        <a asp-action="Index" class="btn btn-secondary">Back to Stations</a>
+    </div>
+</div>

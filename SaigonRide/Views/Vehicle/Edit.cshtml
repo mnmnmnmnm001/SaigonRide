@@ -1,0 +1,58 @@
+@model SaigonRide.Models.Vehicle
+
+@{
+    ViewData["Title"] = "Edit Vehicle";
+}
+
+<h1>Edit Vehicle</h1>
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" name="VehicleId" value="@Model.VehicleId" />
+
+            <div class="form-group mb-3">
+                <label for="Type" class="form-label">Vehicle Type</label>
+                <select id="Type" name="Type" class="form-control" required>
+                    <option value="StandardBike" selected="@(Model.Type == "StandardBike")">Standard Bike</option>
+                    <option value="EBike" selected="@(Model.Type == "EBike")">E-Bike</option>
+                    <option value="Scooter" selected="@(Model.Type == "Scooter")">E-Scooter</option>
+                </select>
+                <span asp-validation-for="Type" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="Code" class="form-label">Vehicle Code</label>
+                <input type="text" id="Code" name="Code" value="@Model.Code" class="form-control" required />
+                <span asp-validation-for="Code" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="FarePerMin" class="form-label">Fare Per Minute (VND)</label>
+                <input type="number" id="FarePerMin" name="FarePerMin" value="@Model.FarePerMin" class="form-control" step="0.01" required />
+                <span asp-validation-for="FarePerMin" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="State" class="form-label">Status</label>
+                <select id="State" name="State" class="form-control" required>
+                    <option value="0" selected="@(Model.State == 0)">Available</option>
+                    <option value="1" selected="@(Model.State == 1)">In Transit</option>
+                    <option value="2" selected="@(Model.State == 2)">Maintenance</option>
+                </select>
+                <span asp-validation-for="State" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="CurrentPos" class="form-label">Current Position</label>
+                <input type="text" id="CurrentPos" name="CurrentPos" value="@Model.CurrentPos" class="form-control" required />
+                <span asp-validation-for="CurrentPos" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Vehicle</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

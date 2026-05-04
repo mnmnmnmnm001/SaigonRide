@@ -1,0 +1,68 @@
+@model List<SaigonRide.Models.Rental>
+
+@{
+    ViewData["Title"] = "Rental Management";
+}
+
+<h1>Rental Management</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Start New Rental</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Rental ID</th>
+            <th>User ID</th>
+            <th>Vehicle</th>
+            <th>From Station</th>
+            <th>To Station</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Fare</th>
+            <th>Discount</th>
+            <th>Final Fare</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.RentalId</td>
+                <td>@item.UserId</td>
+                <td>@item.Vehicle?.Type (@item.Vehicle?.Code)</td>
+                <td>@item.StartStation?.Name</td>
+                <td>@item.EndStation?.Name</td>
+                <td>@item.TimeStart.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@(item.TimeEnd != DateTime.MinValue ? item.TimeEnd.ToString("yyyy-MM-dd HH:mm") : "In Progress")</td>
+                <td>@string.Format("{0:N0}", item.CalculatedFare) VND</td>
+                <td>@string.Format("{0:N0}", item.DiscountApplied) VND</td>
+                <td>@string.Format("{0:N0}", item.FinalFare) VND</td>
+                <td>
+                    @if (item.Status == 0)
+                    {
+                        <span class="badge bg-warning">Active</span>
+                    }
+                    else if (item.Status == 1)
+                    {
+                        <span class="badge bg-success">Completed</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Cancelled</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.RentalId" class="btn btn-sm btn-info">View</a>
+                    @if (item.Status == 0)
+                    {
+                        <a asp-action="EndRental" asp-route-id="@item.RentalId" class="btn btn-sm btn-success">End Rental</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

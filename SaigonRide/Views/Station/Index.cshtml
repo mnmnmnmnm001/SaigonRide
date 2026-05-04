@@ -1,0 +1,65 @@
+@model List<SaigonRide.Models.Station>
+
+@{
+    ViewData["Title"] = "Station Management";
+}
+
+<h1>Station Management</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New Station</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Location (Lat, Lng)</th>
+            <th>Current / Max Capacity</th>
+            <th>Utilization Ratio</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.StationId</td>
+                <td>@item.Name</td>
+                <td>@item.Latitude.ToString("F4"), @item.Longitude.ToString("F4")</td>
+                <td>@item.CurrentCapacity / @item.MaxCapacity</td>
+                <td>
+                    @{
+                        double ratio = item.GetRatio();
+                        var statusClass = ratio >= 0.8 ? "success" : (ratio >= 0.5 ? "warning" : "danger");
+                    }
+                    <span class="badge bg-@statusClass">@string.Format("{0:P0}", ratio)</span>
+                </td>
+                <td>
+                    @{
+                        double ratio2 = item.GetRatio();
+                        if (ratio2 < 0.2)
+                        {
+                            <span class="badge bg-danger">Low</span>
+                        }
+                        else if (ratio2 < 0.5)
+                        {
+                            <span class="badge bg-warning">Medium</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">High</span>
+                        }
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.StationId" class="btn btn-sm btn-info">View</a>
+                    <a asp-action="Edit" asp-route-id="@item.StationId" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.StationId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

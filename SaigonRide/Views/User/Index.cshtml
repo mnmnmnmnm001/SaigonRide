@@ -1,0 +1,61 @@
+@model List<SaigonRide.Models.User>
+
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<h1>User Management</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New User</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Bank Number</th>
+            <th>Chosen Payment</th>
+            <th>Total Paid</th>
+            <th>Additional Info</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.UserId</td>
+                <td>
+                    @if (item is SaigonRide.Models.LocalCommuter)
+                    {
+                        <span class="badge bg-primary">Local Commuter</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-info">Foreign Tourist</span>
+                    }
+                </td>
+                <td>@item.BankNum</td>
+                <td>@item.ChosenPaymentCode</td>
+                <td>@string.Format("{0:N0}", item.Payed) VND</td>
+                <td>
+                    @if (item is SaigonRide.Models.LocalCommuter local)
+                    {
+                        <small>MoMo: @local.P_MoMo | VNPay: @local.P_VNPay</small>
+                    }
+                    else if (item is SaigonRide.Models.ForeignTourist tourist)
+                    {
+                        <small>Passport: @tourist.Passport | ApplePay: @tourist.P_ApplePay | PayPal: @tourist.P_PayPal</small>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.UserId" class="btn btn-sm btn-info">View</a>
+                    <a asp-action="Edit" asp-route-id="@item.UserId" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.UserId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,107 @@
+@model SaigonRide.Models.User
+
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<h1>User Details</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h5>
+                        @if (Model is SaigonRide.Models.LocalCommuter)
+                        {
+                            <span class="badge bg-primary">Local Commuter</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-info">Foreign Tourist</span>
+                        }
+                        - User #@Model.UserId
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">User ID</dt>
+                        <dd class="col-sm-9">@Model.UserId</dd>
+
+                        <dt class="col-sm-3">Bank Account</dt>
+                        <dd class="col-sm-9">@Model.BankNum</dd>
+
+                        <dt class="col-sm-3">Payment Method</dt>
+                        <dd class="col-sm-9">@Model.ChosenPaymentCode</dd>
+
+                        <dt class="col-sm-3">Total Paid</dt>
+                        <dd class="col-sm-9">@string.Format("{0:N0}", Model.Payed) VND</dd>
+
+                        @if (Model is SaigonRide.Models.LocalCommuter local)
+                        {
+                            <dt class="col-sm-3">MoMo Enabled</dt>
+                            <dd class="col-sm-9">
+                                @if (local.P_MoMo)
+                                {
+                                    <span class="badge bg-success">Yes</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">No</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-3">VNPay Enabled</dt>
+                            <dd class="col-sm-9">
+                                @if (local.P_VNPay)
+                                {
+                                    <span class="badge bg-success">Yes</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">No</span>
+                                }
+                            </dd>
+                        }
+
+                        @if (Model is SaigonRide.Models.ForeignTourist tourist)
+                        {
+                            <dt class="col-sm-3">Passport</dt>
+                            <dd class="col-sm-9">@tourist.Passport</dd>
+
+                            <dt class="col-sm-3">Apple Pay Enabled</dt>
+                            <dd class="col-sm-9">
+                                @if (tourist.P_ApplePay)
+                                {
+                                    <span class="badge bg-success">Yes</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">No</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-3">PayPal Enabled</dt>
+                            <dd class="col-sm-9">
+                                @if (tourist.P_PayPal)
+                                {
+                                    <span class="badge bg-success">Yes</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">No</span>
+                                }
+                            </dd>
+                        }
+                    </dl>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn btn-warning">Edit</a>
+                <a asp-action="Delete" asp-route-id="@Model.UserId" class="btn btn-danger">Delete</a>
+                <a asp-action="Index" class="btn btn-secondary">Back to Users</a>
+            </div>
+        </div>
+    </div>
+</div>

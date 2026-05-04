@@ -1,0 +1,66 @@
+@model SaigonRide.Models.Rental
+
+@{
+    ViewData["Title"] = "Start New Rental";
+}
+
+<h1>Start New Rental</h1>
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label for="UserId" class="form-label">Select User</label>
+                <select id="UserId" name="UserId" class="form-control" required>
+                    <option value="">-- Select a User --</option>
+                    @if (ViewData["Users"] is List<SaigonRide.Models.User> users)
+                    {
+                        @foreach (var user in users)
+                        {
+                            <option value="@user.UserId">
+                                User @user.UserId (@(user is SaigonRide.Models.LocalCommuter ? "Local Commuter" : "Foreign Tourist"))
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="VehicleId" class="form-label">Select Vehicle</label>
+                <select id="VehicleId" name="VehicleId" class="form-control" required>
+                    <option value="">-- Select a Vehicle --</option>
+                    @if (ViewData["Vehicles"] is List<SaigonRide.Models.Vehicle> vehicles)
+                    {
+                        @foreach (var vehicle in vehicles)
+                        {
+                            <option value="@vehicle.VehicleId">
+                                @vehicle.Type - @vehicle.Code (@string.Format("{0:N0}", vehicle.FarePerMin) VND/min)
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="StartStationId" class="form-label">Select Start Station</label>
+                <select id="StartStationId" name="StartStationId" class="form-control" required>
+                    <option value="">-- Select a Station --</option>
+                    @if (ViewData["Stations"] is List<SaigonRide.Models.Station> stations)
+                    {
+                        @foreach (var station in stations)
+                        {
+                            <option value="@station.StationId">
+                                @station.Name (Capacity: @station.CurrentCapacity/@station.MaxCapacity)
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Start Rental</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

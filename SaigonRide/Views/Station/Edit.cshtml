@@ -1,0 +1,50 @@
+@model SaigonRide.Models.Station
+
+@{
+    ViewData["Title"] = "Edit Station";
+}
+
+<h1>Edit Station</h1>
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" name="StationId" value="@Model.StationId" />
+
+            <div class="form-group mb-3">
+                <label for="Name" class="form-label">Station Name</label>
+                <input type="text" id="Name" name="Name" value="@Model.Name" class="form-control" required />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="Latitude" class="form-label">Latitude</label>
+                <input type="number" id="Latitude" name="Latitude" value="@Model.Latitude" class="form-control" step="0.0001" required />
+                <span asp-validation-for="Latitude" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="Longitude" class="form-label">Longitude</label>
+                <input type="number" id="Longitude" name="Longitude" value="@Model.Longitude" class="form-control" step="0.0001" required />
+                <span asp-validation-for="Longitude" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="MaxCapacity" class="form-label">Maximum Capacity</label>
+                <input type="number" id="MaxCapacity" name="MaxCapacity" value="@Model.MaxCapacity" class="form-control" required />
+                <span asp-validation-for="MaxCapacity" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="CurrentCapacity" class="form-label">Current Capacity</label>
+                <input type="number" id="CurrentCapacity" name="CurrentCapacity" value="@Model.CurrentCapacity" class="form-control" required />
+                <span asp-validation-for="CurrentCapacity" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Station</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,62 @@
+@model SaigonRide.Models.Rental
+
+@{
+    ViewData["Title"] = "End Rental";
+}
+
+<h1>End Rental</h1>
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5>Rental Summary</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Rental ID:</strong> @Model.RentalId</p>
+                <p><strong>Vehicle:</strong> @Model.Vehicle?.Type (@Model.Vehicle?.Code)</p>
+                <p><strong>Start Station:</strong> @Model.StartStation?.Name</p>
+                <p><strong>Start Time:</strong> @Model.TimeStart.ToString("yyyy-MM-dd HH:mm:ss")</p>
+            </div>
+        </div>
+
+        <form asp-action="EndRental" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" name="id" value="@Model.RentalId" />
+
+            <div class="form-group mb-3">
+                <label for="EndStationId" class="form-label">Select End Station</label>
+                <select id="EndStationId" name="EndStationId" class="form-control" required>
+                    <option value="">-- Select a Station --</option>
+                    @if (ViewData["Stations"] is List<SaigonRide.Models.Station> stations)
+                    {
+                        @foreach (var station in stations)
+                        {
+                            <option value="@station.StationId">
+                                @station.Name (Capacity: @station.CurrentCapacity/@station.MaxCapacity)
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="paymentMethod" class="form-label">Select Payment Method</label>
+                <select id="paymentMethod" name="paymentMethod" class="form-control" required>
+                    <option value="">-- Select Payment Method --</option>
+                    @if (ViewData["PaymentMethods"] is List<string> methods)
+                    {
+                        @foreach (var method in methods)
+                        {
+                            <option value="@method">@method</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-success">Complete Rental</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

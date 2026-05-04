@@ -1,0 +1,56 @@
+@model List<SaigonRide.Models.Vehicle>
+
+@{
+    ViewData["Title"] = "Vehicle Management";
+}
+
+<h1>Vehicle Management</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New Vehicle</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Code</th>
+            <th>Fare/Min</th>
+            <th>Current Position</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.VehicleId</td>
+                <td>@item.Type</td>
+                <td>@item.Code</td>
+                <td>@string.Format("{0:N0}", item.FarePerMin) VND</td>
+                <td>@item.CurrentPos</td>
+                <td>
+                    @if (item.State == 0)
+                    {
+                        <span class="badge bg-success">Available</span>
+                    }
+                    else if (item.State == 1)
+                    {
+                        <span class="badge bg-warning">In Transit</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Maintenance</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.VehicleId" class="btn btn-sm btn-info">View</a>
+                    <a asp-action="Edit" asp-route-id="@item.VehicleId" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.VehicleId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

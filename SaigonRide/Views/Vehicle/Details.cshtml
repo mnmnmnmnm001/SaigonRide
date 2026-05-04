@@ -1,0 +1,59 @@
+@model SaigonRide.Models.Vehicle
+
+@{
+    ViewData["Title"] = "Vehicle Details";
+}
+
+<h1>Vehicle Details</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h5>@Model.Type - @Model.Code</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">Vehicle ID</dt>
+                        <dd class="col-sm-9">@Model.VehicleId</dd>
+
+                        <dt class="col-sm-3">Type</dt>
+                        <dd class="col-sm-9">@Model.Type</dd>
+
+                        <dt class="col-sm-3">Code</dt>
+                        <dd class="col-sm-9">@Model.Code</dd>
+
+                        <dt class="col-sm-3">Fare Per Minute</dt>
+                        <dd class="col-sm-9">@string.Format("{0:N0}", Model.FarePerMin) VND</dd>
+
+                        <dt class="col-sm-3">Current Position</dt>
+                        <dd class="col-sm-9">@Model.CurrentPos</dd>
+
+                        <dt class="col-sm-3">Status</dt>
+                        <dd class="col-sm-9">
+                            @if (Model.State == 0)
+                            {
+                                <span class="badge bg-success" style="font-size: 1rem;">Available</span>
+                            }
+                            else if (Model.State == 1)
+                            {
+                                <span class="badge bg-warning" style="font-size: 1rem;">In Transit</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger" style="font-size: 1rem;">Maintenance</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <a asp-action="Edit" asp-route-id="@Model.VehicleId" class="btn btn-warning">Edit</a>
+                <a asp-action="Delete" asp-route-id="@Model.VehicleId" class="btn btn-danger">Delete</a>
+                <a asp-action="Index" class="btn btn-secondary">Back to Vehicles</a>
+            </div>
+        </div>
+    </div>
+</div>

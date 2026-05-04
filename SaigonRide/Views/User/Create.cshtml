@@ -1,0 +1,98 @@
+@{
+    ViewData["Title"] = "Create User";
+}
+
+<h1>Add New User</h1>
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label for="userType" class="form-label">User Type</label>
+                <select id="userType" name="userType" class="form-control" required onchange="updateForm()">
+                    <option value="">-- Select User Type --</option>
+                    <option value="LocalCommuter">Local Commuter</option>
+                    <option value="ForeignTourist">Foreign Tourist</option>
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="BankNum" class="form-label">Bank Number</label>
+                <input type="text" id="BankNum" name="BankNum" class="form-control" required />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="ChosenPaymentCode" class="form-label">Preferred Payment Method</label>
+                <select id="ChosenPaymentCode" name="ChosenPaymentCode" class="form-control" required>
+                    <option value="">-- Select Payment Method --</option>
+                    <option value="momo">MoMo</option>
+                    <option value="vnpay">VNPay</option>
+                    <option value="applepay">Apple Pay</option>
+                    <option value="paypal">PayPal</option>
+                    <option value="cash">Cash</option>
+                </select>
+            </div>
+
+            <div id="localCommuterFields" style="display:none;">
+                <div class="form-group mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="P_MoMo" id="P_MoMo" value="true" />
+                        <label class="form-check-label" for="P_MoMo">Enable MoMo</label>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="P_VNPay" id="P_VNPay" value="true" />
+                        <label class="form-check-label" for="P_VNPay">Enable VNPay</label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="foreignTouristFields" style="display:none;">
+                <div class="form-group mb-3">
+                    <label for="Passport" class="form-label">Passport Number</label>
+                    <input type="text" id="Passport" name="Passport" class="form-control" />
+                </div>
+
+                <div class="form-group mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="P_ApplePay" id="P_ApplePay" value="true" />
+                        <label class="form-check-label" for="P_ApplePay">Enable Apple Pay</label>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="P_PayPal" id="P_PayPal" value="true" />
+                        <label class="form-check-label" for="P_PayPal">Enable PayPal</label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create User</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+<script>
+    function updateForm() {
+        const userType = document.getElementById('userType').value;
+        const localFields = document.getElementById('localCommuterFields');
+        const foreignFields = document.getElementById('foreignTouristFields');
+
+        if (userType === 'LocalCommuter') {
+            localFields.style.display = 'block';
+            foreignFields.style.display = 'none';
+        } else if (userType === 'ForeignTourist') {
+            localFields.style.display = 'none';
+            foreignFields.style.display = 'block';
+        } else {
+            localFields.style.display = 'none';
+            foreignFields.style.display = 'none';
+        }
+    }
+</script>

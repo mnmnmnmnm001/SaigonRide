@@ -1,0 +1,88 @@
+@model SaigonRide.Models.Rental
+
+@{
+    ViewData["Title"] = "Rental Receipt";
+}
+
+<h1>Rental Receipt</h1>
+
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="alert alert-success">
+                <h4>Rental Completed Successfully!</h4>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5>Receipt #@Model.RentalId</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Journey Details</h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <td><strong>Vehicle:</strong></td>
+                            <td>@Model.Vehicle?.Type (@Model.Vehicle?.Code)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>From:</strong></td>
+                            <td>@Model.StartStation?.Name</td>
+                        </tr>
+                        <tr>
+                            <td><strong>To:</strong></td>
+                            <td>@Model.EndStation?.Name</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Start Time:</strong></td>
+                            <td>@Model.TimeStart.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        </tr>
+                        <tr>
+                            <td><strong>End Time:</strong></td>
+                            <td>@Model.TimeEnd.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Duration:</strong></td>
+                            <td>@{
+                                var duration = Model.TimeEnd - Model.TimeStart;
+                                @string.Format("{0:D2}:{1:D2}:{2:D2}", (int)duration.TotalHours, duration.Minutes, duration.Seconds)
+                            }</td>
+                        </tr>
+                    </table>
+
+                    <hr />
+
+                    <h6>Fare Summary</h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <td><strong>Base Fare:</strong></td>
+                            <td>@string.Format("{0:N0}", Model.CalculatedFare) VND</td>
+                        </tr>
+                        @if (Model.DiscountApplied > 0)
+                        {
+                            <tr class="table-success">
+                                <td><strong>Low Inventory Discount (15%):</strong></td>
+                                <td>-@string.Format("{0:N0}", Model.DiscountApplied) VND</td>
+                            </tr>
+                        }
+                        <tr class="table-info">
+                            <td><strong>Total Amount Due:</strong></td>
+                            <td><h5>@string.Format("{0:N0}", Model.FinalFare) VND</h5></td>
+                        </tr>
+                    </table>
+
+                    @if (Model.DiscountApplied > 0)
+                    {
+                        <div class="alert alert-info">
+                            <strong>Great Savings!</strong> You received a 15% discount for returning the vehicle to a low-inventory station.
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <a href="/" class="btn btn-primary">Return to Dashboard</a>
+                <a asp-action="Index" class="btn btn-secondary">View All Rentals</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,181 @@
+using Microsoft.AspNetCore.Mvc;
+using SaigonRide.Data;
+using SaigonRide.Models;
+using SaigonRide.Services;
+using Microsoft.EntityFrameworkCore;
+
+namespace SaigonRide.Controllers
+{
+    public class KioskController : Controller
+    {
+        private readonly SaigonRideContext _context;
+        private readonly IFareCalculationService _fareService;
+        private readonly IRentalTransactionService _transactionService;
+        private readonly IPaymentService _paymentService;
+        private readonly IEncryptionService _encryptionService;
+
+        public KioskController(SaigonRideContext context, IFareCalculationService fareService, IRentalTransactionService transactionService, IPaymentService paymentService, IEncryptionService encryptionService)
+        {
+            _context = context;
+            _fareService = fareService;
+            _transactionService = transactionService;
+            _paymentService = paymentService;
+            _encryptionService = encryptionService;
+        }
+
+        // Main choice page
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        // Show available vehicles
+        public async Task<IActionResult> Rent()
+        {
+            var vehicles = await _context.Vehicles.Where(v => v.State == 0).ToListAsync();
+            ViewData["Stations"] = await _context.Stations.ToListAsync();
+            return View(vehicles);
+        }
+
+        // Details and input for renting a specific vehicle
+        public async Task<IActionResult> RentDetails(int id)
+        {
+            var vehicle = await _context.Vehicles.FindAsync(id);
+            if (vehicle == null) return NotFound();
+            ViewData["Stations"] = await _context.Stations.ToListAsync();
+            return View(vehicle);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProcessRent(int vehicleId, int stationId, string userType, string bankNum, string passport, int minutes)
+        {
+            var vehicle = await _context.Vehicles.FindAsync(vehicleId);
+            var station = await _context.Stations.FindAsync(stationId);
+            if (vehicle == null || station == null) return NotFound();
+
+            if (minutes <= 0)
+            {
+                TempData["Error"] = "Minutes must be greater than zero.";
+                return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
+            }
+
+            double moneyRented = _fareService.CalculateFare(vehicle, minutes, false);
+
+            // Create or find user
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.BankNum == bankNum);
+            if (user == null)
+            {
+                if (userType == "LocalCommuter")
+                {
+                    user = new LocalCommuter { BankNum = bankNum, ChosenPaymentCode = "Cash", Payed = 0, P_MoMo = false, P_VNPay = false };
+                }
+                else
+                {
+                    user = new ForeignTourist { BankNum = bankNum, ChosenPaymentCode = "Cash", Payed = 0, Passport = passport ?? "", P_ApplePay = false, P_PayPal = false };
+                }
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+            }
+
+            // Charge user from their account balance. User.Payed represents account balance.
+            if (user.Payed < moneyRented)
+            {
+                TempData["Error"] = "Insufficient funds in user account.";
+                return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
+            }
+            user.Payed -= moneyRented;
+            _context.Users.Update(user);
+
+            // Create transaction
+            bool created = await _transactionService.CreateRentalTransactionAsync(bankNum, vehicle.Code, minutes, moneyRented, user.UserType, passport, stationId);
+            if (!created)
+            {
+                TempData["Error"] = "Failed to create rental transaction.";
+                return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
+            }
+
+            // Update vehicle and station
+            vehicle.State = 1; // In-Transit
+            vehicle.CurrentPos = "In-Transit";
+            station.CurrentCapacity = Math.Max(0, station.CurrentCapacity - 1);
+            station.Ratio = station.GetRatio();
+
+            _context.Vehicles.Update(vehicle);
+            _context.Stations.Update(station);
+            await _context.SaveChangesAsync();
+
+            ViewData["VehicleCode"] = vehicle.Code;
+            ViewData["Minutes"] = minutes;
+            ViewData["MoneyRented"] = moneyRented;
+            return View("RentResult");
+        }
+
+        public async Task<IActionResult> Return()
+        {
+            ViewBag.Stations = await _context.Stations.ToListAsync();
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProcessReturn(string vehicleCode, int returnStationId)
+        {
+            if (string.IsNullOrEmpty(vehicleCode))
+            {
+                ModelState.AddModelError("", "Vehicle code is required.");
+                return View("Return");
+            }
+
+            var transaction = await _transactionService.GetRentalTransactionByVehicleCodeAsync(vehicleCode);
+            if (transaction == null)
+            {
+                ModelState.AddModelError("", "Rental transaction not found for provided vehicle code.");
+                return View("Return");
+            }
+
+            var returnStation = await _context.Stations.FindAsync(returnStationId);
+            if (returnStation == null)
+            {
+                ModelState.AddModelError("", "Return station not found.");
+                return View("Return");
+            }
+
+            var vehicle = await _context.Vehicles.FirstOrDefaultAsync(v => v.Code == vehicleCode);
+
+            bool isLowInventory = _fareService.IsLowInventory(returnStation);
+            double finalFare = _fareService.ApplyDiscount(transaction.MoneyRented, isLowInventory);
+            double difference = finalFare - transaction.MoneyRented;
+
+            // Update vehicle and station
+            if (vehicle != null)
+            {
+                vehicle.State = 0;
+                vehicle.CurrentPos = returnStation.Name;
+                _context.Vehicles.Update(vehicle);
+            }
+
+            returnStation.CurrentCapacity = Math.Min(returnStation.CurrentCapacity + 1, returnStation.MaxCapacity);
+            returnStation.Ratio = returnStation.GetRatio();
+            _context.Stations.Update(returnStation);
+
+            // Complete transaction (remove transaction record)
+            await _transaction_service_complete(transaction, returnStationId, difference);
+
+            await _context.SaveChangesAsync();
+
+            ViewData["FinalFare"] = finalFare;
+            ViewData["MoneyRented"] = transaction.MoneyRented;
+            ViewData["Difference"] = difference;
+            ViewData["VehicleCode"] = vehicleCode;
+            return View("ReturnResult");
+        }
+
+        // helper to call complete
+        private async Task _transaction_service_complete(RentalTransaction transaction, int returnStationId, double difference)
+        {
+            // For this implementation just call CompleteRentalAsync to remove transaction
+            await _transactionService.CompleteRentalAsync(transaction.TransactionId, returnStationId, Math.Max(0, difference), Math.Max(0, -difference));
+        }
+    }
+}

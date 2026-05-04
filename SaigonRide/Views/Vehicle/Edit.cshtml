@@ -11,7 +11,7 @@
         <form asp-action="Edit" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <input type="hidden" name="VehicleId" value="@Model.VehicleId" />
+            <input type="hidden" name="Code" value="@Model.Code" />
 
             <div class="form-group mb-3">
                 <label for="Type" class="form-label">Vehicle Type</label>
@@ -25,7 +25,7 @@
 
             <div class="form-group mb-3">
                 <label for="Code" class="form-label">Vehicle Code</label>
-                <input type="text" id="Code" name="Code" value="@Model.Code" class="form-control" required />
+                <input type="text" id="Code" name="Code" value="@Model.Code" class="form-control" required readonly />
                 <span asp-validation-for="Code" class="text-danger"></span>
             </div>
 

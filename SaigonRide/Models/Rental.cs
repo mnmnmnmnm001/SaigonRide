@@ -3,8 +3,8 @@ namespace SaigonRide.Models
     public class Rental
     {
         public int RentalId { get; set; }
-        public int UserId { get; set; }
-        public int VehicleId { get; set; }
+        public string UserId { get; set; } // Foreign key to BankNum
+        public string VehicleId { get; set; } // Foreign key to Vehicle.Code
         public int StartStationId { get; set; }
         public int EndStationId { get; set; }
         public DateTime TimeStart { get; set; }

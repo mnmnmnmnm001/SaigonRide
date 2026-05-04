@@ -20,14 +20,11 @@
                         {
                             <span class="badge bg-info">Foreign Tourist</span>
                         }
-                        - User #@Model.UserId
+                        - @Model.BankNum
                     </h5>
                 </div>
                 <div class="card-body">
                     <dl class="row">
-                        <dt class="col-sm-3">User ID</dt>
-                        <dd class="col-sm-9">@Model.UserId</dd>
-
                         <dt class="col-sm-3">Bank Account</dt>
                         <dd class="col-sm-9">@Model.BankNum</dd>
 
@@ -98,8 +95,8 @@
             </div>
 
             <div class="mt-3">
-                <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn btn-warning">Edit</a>
-                <a asp-action="Delete" asp-route-id="@Model.UserId" class="btn btn-danger">Delete</a>
+                <a asp-action="Edit" asp-route-id="@Model.BankNum" class="btn btn-warning">Edit</a>
+                <a asp-action="Delete" asp-route-id="@Model.BankNum" class="btn btn-danger">Delete</a>
                 <a asp-action="Index" class="btn btn-secondary">Back to Users</a>
             </div>
         </div>

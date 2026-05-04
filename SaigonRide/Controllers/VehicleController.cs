@@ -22,13 +22,13 @@ namespace SaigonRide.Controllers
         }
 
         // GET: Vehicle/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string id)
         {
             if (id == null)
                 return NotFound();
 
             var vehicle = await _context.Vehicles
-                .FirstOrDefaultAsync(m => m.VehicleId == id);
+                .FirstOrDefaultAsync(m => m.Code == id);
             if (vehicle == null)
                 return NotFound();
 
@@ -57,7 +57,7 @@ namespace SaigonRide.Controllers
         }
 
         // GET: Vehicle/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
                 return NotFound();
@@ -72,9 +72,9 @@ namespace SaigonRide.Controllers
         // POST: Vehicle/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("VehicleId,Type,FarePerMin,State,Code,CurrentPos")] Vehicle vehicle)
+        public async Task<IActionResult> Edit(string id, [Bind("Code,Type,FarePerMin,State,CurrentPos")] Vehicle vehicle)
         {
-            if (id != vehicle.VehicleId)
+            if (id != vehicle.Code)
                 return NotFound();
 
             if (ModelState.IsValid)
@@ -86,7 +86,7 @@ namespace SaigonRide.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!VehicleExists(vehicle.VehicleId))
+                    if (!VehicleExists(vehicle.Code))
                         return NotFound();
                     throw;
                 }
@@ -96,13 +96,13 @@ namespace SaigonRide.Controllers
         }
 
         // GET: Vehicle/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
                 return NotFound();
 
             var vehicle = await _context.Vehicles
-                .FirstOrDefaultAsync(m => m.VehicleId == id);
+                .FirstOrDefaultAsync(m => m.Code == id);
             if (vehicle == null)
                 return NotFound();
 
@@ -112,7 +112,7 @@ namespace SaigonRide.Controllers
         // POST: Vehicle/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var vehicle = await _context.Vehicles.FindAsync(id);
             if (vehicle != null)
@@ -123,9 +123,9 @@ namespace SaigonRide.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool VehicleExists(int id)
+        private bool VehicleExists(string id)
         {
-            return _context.Vehicles.Any(e => e.VehicleId == id);
+            return _context.Vehicles.Any(e => e.Code == id);
         }
     }
 }

@@ -43,11 +43,10 @@ namespace SaigonRide.Controllers
         // POST: Station/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,CurrentCapacity,MaxCapacity,Latitude,Longitude")] Station station)
+        public async Task<IActionResult> Create([Bind("Name,CurrentCapacity,MaxCapacity")] Station station)
         {
             if (ModelState.IsValid)
             {
-                station.Ratio = station.GetRatio();
                 _context.Add(station);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -71,7 +70,7 @@ namespace SaigonRide.Controllers
         // POST: Station/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("StationId,Name,CurrentCapacity,MaxCapacity,Latitude,Longitude,Ratio")] Station station)
+        public async Task<IActionResult> Edit(int id, [Bind("StationId,Name,CurrentCapacity,MaxCapacity")] Station station)
         {
             if (id != station.StationId)
                 return NotFound();
@@ -80,7 +79,6 @@ namespace SaigonRide.Controllers
             {
                 try
                 {
-                    station.Ratio = station.GetRatio();
                     _context.Update(station);
                     await _context.SaveChangesAsync();
                 }

@@ -19,8 +19,8 @@
                     {
                         @foreach (var user in users)
                         {
-                            <option value="@user.UserId">
-                                User @user.UserId (@(user is SaigonRide.Models.LocalCommuter ? "Local Commuter" : "Foreign Tourist"))
+                            <option value="@user.BankNum">
+                                @user.BankNum (@(user is SaigonRide.Models.LocalCommuter ? "Local Commuter" : "Foreign Tourist"))
                             </option>
                         }
                     }
@@ -35,7 +35,7 @@
                     {
                         @foreach (var vehicle in vehicles)
                         {
-                            <option value="@vehicle.VehicleId">
+                            <option value="@vehicle.Code">
                                 @vehicle.Type - @vehicle.Code (@string.Format("{0:N0}", vehicle.FarePerMin) VND/min)
                             </option>
                         }

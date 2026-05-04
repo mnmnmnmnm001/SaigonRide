@@ -15,7 +15,6 @@
         <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Location (Lat, Lng)</th>
             <th>Current / Max Capacity</th>
             <th>Utilization Ratio</th>
             <th>Status</th>
@@ -28,7 +27,6 @@
             <tr>
                 <td>@item.StationId</td>
                 <td>@item.Name</td>
-                <td>@item.Latitude.ToString("F4"), @item.Longitude.ToString("F4")</td>
                 <td>@item.CurrentCapacity / @item.MaxCapacity</td>
                 <td>
                     @{

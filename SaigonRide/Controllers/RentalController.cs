@@ -122,6 +122,7 @@ namespace SaigonRide.Controllers
         }
 
         // GET: Rental/UserRentals/5
+        /*
         public async Task<IActionResult> UserRentals(int? id)
         {
             if (id == null)
@@ -129,7 +130,7 @@ namespace SaigonRide.Controllers
 
             var rentals = await _rentalService.GetUserRentals(id.Value);
             return View(rentals);
-        }
+        }*/
 
         // GET: Rental/ListVehicles
         public async Task<IActionResult> ListVehicles()

@@ -15,7 +15,6 @@
                 </div>
                 <div class="card-body">
                     <p><strong>Station ID:</strong> @Model.StationId</p>
-                    <p><strong>Location:</strong> @Model.Latitude.ToString("F4"), @Model.Longitude.ToString("F4")</p>
                     <p><strong>Current Capacity:</strong> @Model.CurrentCapacity</p>
                     <p><strong>Max Capacity:</strong> @Model.MaxCapacity</p>
                     <p><strong>Utilization Ratio:</strong> @string.Format("{0:P2}", Model.GetRatio())</p>

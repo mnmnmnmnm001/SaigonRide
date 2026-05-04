@@ -22,11 +22,17 @@ namespace SaigonRide.Data
 
             // Configure User inheritance (TPH - Table Per Hierarchy)
             modelBuilder.Entity<User>()
+                .HasKey(u => u.BankNum);
+
+            modelBuilder.Entity<User>()
                 .HasDiscriminator<string>("UserType")
                 .HasValue<LocalCommuter>("LocalCommuter")
                 .HasValue<ForeignTourist>("ForeignTourist");
 
-            // Configure Vehicle relationships
+            // Configure Vehicle with Code as primary key
+            modelBuilder.Entity<Vehicle>()
+                .HasKey(v => v.Code);
+
             modelBuilder.Entity<Vehicle>()
                 .HasMany(v => v.Rentals)
                 .WithOne(r => r.Vehicle)
@@ -60,31 +66,32 @@ namespace SaigonRide.Data
         {
             // Seed Stations
             modelBuilder.Entity<Station>().HasData(
-                new Station { StationId = 1, Name = "Ben Thanh Market", CurrentCapacity = 15, MaxCapacity = 20, Latitude = 10.7725, Longitude = 106.6992, Ratio = 0.75 },
-                new Station { StationId = 2, Name = "District 1 Hub", CurrentCapacity = 8, MaxCapacity = 30, Latitude = 10.7758, Longitude = 106.7008, Ratio = 0.27 },
-                new Station { StationId = 3, Name = "Saigon Center", CurrentCapacity = 28, MaxCapacity = 35, Latitude = 10.7769, Longitude = 106.7009, Ratio = 0.80 },
-                new Station { StationId = 4, Name = "Tan Binh Station", CurrentCapacity = 5, MaxCapacity = 25, Latitude = 10.8074, Longitude = 106.6756, Ratio = 0.20 }
+                new Station { StationId = 1, Name = "Ben Thanh Market", CurrentCapacity = 3, MaxCapacity = 12 },
+                new Station { StationId = 2, Name = "District 1 Hub", CurrentCapacity = 3, MaxCapacity = 10 },
+                new Station { StationId = 3, Name = "Saigon Center", CurrentCapacity = 2, MaxCapacity = 5 }
             );
 
             // Seed Vehicles
             modelBuilder.Entity<Vehicle>().HasData(
-                new Vehicle { VehicleId = 1, Type = "StandardBike", FarePerMin = 500, State = 0, Code = "SB001", CurrentPos = "Station 1" },
-                new Vehicle { VehicleId = 2, Type = "StandardBike", FarePerMin = 500, State = 0, Code = "SB002", CurrentPos = "Station 1" },
-                new Vehicle { VehicleId = 3, Type = "EBike", FarePerMin = 1000, State = 0, Code = "EB001", CurrentPos = "Station 2" },
-                new Vehicle { VehicleId = 4, Type = "EBike", FarePerMin = 1000, State = 0, Code = "EB002", CurrentPos = "Station 2" },
-                new Vehicle { VehicleId = 5, Type = "Scooter", FarePerMin = 1500, State = 0, Code = "ES001", CurrentPos = "Station 3" },
-                new Vehicle { VehicleId = 6, Type = "Scooter", FarePerMin = 1500, State = 0, Code = "ES002", CurrentPos = "Station 3" }
+                new Vehicle { Code = "SB001", Type = "StandardBike", FarePerMin = 500, State = 0, CurrentPos = "Ben Thanh Market" },
+                new Vehicle { Code = "SB002", Type = "StandardBike", FarePerMin = 500, State = 0, CurrentPos = "Ben Thanh Market" },
+                new Vehicle { Code = "EB001", Type = "EBike", FarePerMin = 1000, State = 0, CurrentPos = "Ben Thanh Market" },
+                new Vehicle { Code = "EB002", Type = "EBike", FarePerMin = 1000, State = 0, CurrentPos = "District 1 Hub" },
+                new Vehicle { Code = "ES001", Type = "Scooter", FarePerMin = 1500, State = 0, CurrentPos = "Saigon Center" },
+                new Vehicle { Code = "ES002", Type = "Scooter", FarePerMin = 1500, State = 0, CurrentPos = "District 1 Hub"},
+                new Vehicle { Code = "ES003", Type = "Scooter", FarePerMin = 1500, State = 0, CurrentPos = "Saigon Center" },
+                new Vehicle { Code = "ES004", Type = "Scooter", FarePerMin = 1500, State = 0, CurrentPos = "District 1 Hub" }
             );
 
             // Seed Users
             modelBuilder.Entity<LocalCommuter>().HasData(
-                new LocalCommuter { UserId = 1, BankNum = "0123456789", ChosenPaymentCode = "momo", Payed = 50000, P_MoMo = true, P_VNPay = false },
-                new LocalCommuter { UserId = 2, BankNum = "0987654321", ChosenPaymentCode = "vnpay", Payed = 100000, P_MoMo = true, P_VNPay = true }
+                new LocalCommuter { BankNum = "0123456789", ChosenPaymentCode = "momo", Payed = 50000, P_MoMo = true, P_VNPay = false },
+                new LocalCommuter { BankNum = "0987654321", ChosenPaymentCode = "vnpay", Payed = 100000, P_MoMo = true, P_VNPay = true }
             );
 
             modelBuilder.Entity<ForeignTourist>().HasData(
-                new ForeignTourist { UserId = 3, BankNum = "INTL001", ChosenPaymentCode = "applepay", Payed = 75000, Passport = "A12345678", P_ApplePay = true, P_PayPal = false },
-                new ForeignTourist { UserId = 4, BankNum = "INTL002", ChosenPaymentCode = "paypal", Payed = 150000, Passport = "B98765432", P_ApplePay = false, P_PayPal = true }
+                new ForeignTourist { BankNum = "INTL001", ChosenPaymentCode = "applepay", Payed = 75000, Passport = "A12345678", P_ApplePay = true, P_PayPal = false },
+                new ForeignTourist { BankNum = "INTL002", ChosenPaymentCode = "paypal", Payed = 150000, Passport = "B98765432", P_ApplePay = false, P_PayPal = true }
             );
         }
     }

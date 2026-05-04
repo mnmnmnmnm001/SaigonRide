@@ -6,10 +6,10 @@ namespace SaigonRide.Services
 {
     public interface IRentalService
     {
-        Task<Rental> StartRental(int userId, int vehicleId, int startStationId);
+        Task<Rental> StartRental(string userId, string vehicleId, int startStationId);
         Task<Rental> EndRental(int rentalId, int endStationId, string paymentMethod);
         Task<Rental> GetRentalById(int rentalId);
-        Task<List<Rental>> GetUserRentals(int userId);
+        /*Task<List<Rental>> GetUserRentals(string userId);*/
         Task<List<Rental>> GetAllRentals();
     }
 
@@ -26,7 +26,7 @@ namespace SaigonRide.Services
             _paymentService = paymentService;
         }
 
-        public async Task<Rental> StartRental(int userId, int vehicleId, int startStationId)
+        public async Task<Rental> StartRental(string userId, string vehicleId, int startStationId)
         {
             try
             {
@@ -116,7 +116,6 @@ namespace SaigonRide.Services
 
                 // Update station inventory
                 endStation.CurrentCapacity = Math.Min(endStation.CurrentCapacity + 1, endStation.MaxCapacity);
-                endStation.Ratio = endStation.GetRatio();
 
                 _context.Rentals.Update(rental);
                 _context.Vehicles.Update(rental.Vehicle);
@@ -140,8 +139,8 @@ namespace SaigonRide.Services
                 .Include(r => r.EndStation)
                 .FirstOrDefaultAsync(r => r.RentalId == rentalId);
         }
-
-        public async Task<List<Rental>> GetUserRentals(int userId)
+        /*
+        public async Task<List<Rental>> GetUserRentals(string userId)
         {
             return await _context.Rentals
                 .Where(r => r.UserId == userId)
@@ -150,7 +149,7 @@ namespace SaigonRide.Services
                 .Include(r => r.EndStation)
                 .OrderByDescending(r => r.TimeStart)
                 .ToListAsync();
-        }
+        }*/
 
         public async Task<List<Rental>> GetAllRentals()
         {

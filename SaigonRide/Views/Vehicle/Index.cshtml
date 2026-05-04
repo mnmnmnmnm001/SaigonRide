@@ -13,9 +13,8 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>ID</th>
-            <th>Type</th>
             <th>Code</th>
+            <th>Type</th>
             <th>Fare/Min</th>
             <th>Current Position</th>
             <th>Status</th>
@@ -26,9 +25,8 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.VehicleId</td>
-                <td>@item.Type</td>
                 <td>@item.Code</td>
+                <td>@item.Type</td>
                 <td>@string.Format("{0:N0}", item.FarePerMin) VND</td>
                 <td>@item.CurrentPos</td>
                 <td>
@@ -46,9 +44,9 @@
                     }
                 </td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.VehicleId" class="btn btn-sm btn-info">View</a>
-                    <a asp-action="Edit" asp-route-id="@item.VehicleId" class="btn btn-sm btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@item.VehicleId" class="btn btn-sm btn-danger">Delete</a>
+                    <a asp-action="Details" asp-route-id="@item.Code" class="btn btn-sm btn-info">View</a>
+                    <a asp-action="Edit" asp-route-id="@item.Code" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Code" class="btn btn-sm btn-danger">Delete</a>
                 </td>
             </tr>
         }

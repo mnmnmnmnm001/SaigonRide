@@ -38,7 +38,7 @@ namespace SaigonRide.Controllers
         }
 
         // Details and input for renting a specific vehicle
-        public async Task<IActionResult> RentDetails(int id)
+        public async Task<IActionResult> RentDetails(string id)
         {
             var vehicle = await _context.Vehicles.FindAsync(id);
             if (vehicle == null) return NotFound();
@@ -48,7 +48,7 @@ namespace SaigonRide.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ProcessRent(int vehicleId, int stationId, string userType, string bankNum, string passport, int minutes)
+        public async Task<IActionResult> ProcessRent(string vehicleId, int stationId, string userType, string bankNum, string passport, int minutes)
         {
             var vehicle = await _context.Vehicles.FindAsync(vehicleId);
             var station = await _context.Stations.FindAsync(stationId);
@@ -56,7 +56,7 @@ namespace SaigonRide.Controllers
 
             if (minutes <= 0)
             {
-                TempData["Error"] = "Minutes must be greater than zero.";
+                TempData["Error"] = "Minutes must be greater than 0.";
                 return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
             }
 
@@ -78,13 +78,15 @@ namespace SaigonRide.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            // Charge user from their account balance. User.Payed represents account balance.
-            if (user.Payed < moneyRented)
+            // Charge user from their account balance.
+            /* here, we havw no api to connect to bank, so we will just skip
+             * get userbankbalance (authorize bank to connect api and get their userbankbalance)
+            if (userbankbalance < moneyRented)
             {
                 TempData["Error"] = "Insufficient funds in user account.";
                 return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
-            }
-            user.Payed -= moneyRented;
+            }*/
+            user.Payed = moneyRented;
             _context.Users.Update(user);
 
             // Create transaction
@@ -99,7 +101,6 @@ namespace SaigonRide.Controllers
             vehicle.State = 1; // In-Transit
             vehicle.CurrentPos = "In-Transit";
             station.CurrentCapacity = Math.Max(0, station.CurrentCapacity - 1);
-            station.Ratio = station.GetRatio();
 
             _context.Vehicles.Update(vehicle);
             _context.Stations.Update(station);
@@ -156,11 +157,10 @@ namespace SaigonRide.Controllers
             }
 
             returnStation.CurrentCapacity = Math.Min(returnStation.CurrentCapacity + 1, returnStation.MaxCapacity);
-            returnStation.Ratio = returnStation.GetRatio();
             _context.Stations.Update(returnStation);
 
             // Complete transaction (remove transaction record)
-            await _transaction_service_complete(transaction, returnStationId, difference);
+            await transaction_complete(transaction, returnStationId, difference);
 
             await _context.SaveChangesAsync();
 
@@ -172,9 +172,9 @@ namespace SaigonRide.Controllers
         }
 
         // helper to call complete
-        private async Task _transaction_service_complete(RentalTransaction transaction, int returnStationId, double difference)
+        private async Task transaction_complete(RentalTransaction transaction, int returnStationId, double difference)
         {
-            // For this implementation just call CompleteRentalAsync to remove transaction
+            //call CompleteRentalAsync to remove transaction
             await _transactionService.CompleteRentalAsync(transaction.TransactionId, returnStationId, Math.Max(0, difference), Math.Max(0, -difference));
         }
     }

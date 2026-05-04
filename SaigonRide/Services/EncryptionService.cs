@@ -15,7 +15,7 @@ namespace SaigonRide.Services
 
         public EncryptionService(IConfiguration configuration)
         {
-            _encryptionKey = configuration["Encryption:Key"] ?? "SaigonRide2024DefaultKey1234567890";
+            _encryptionKey = configuration["Encryption:Key"] ?? "SaigonRide2026sexsexsexsexsexsexsexsex";
             // Ensure key is 32 bytes for AES-256
             if (_encryptionKey.Length < 32)
             {
@@ -30,7 +30,9 @@ namespace SaigonRide.Services
         public string Encrypt(string plainText)
         {
             if (string.IsNullOrEmpty(plainText))
+            {
                 return null;
+            }
 
             using (var aes = Aes.Create())
             {
@@ -59,7 +61,9 @@ namespace SaigonRide.Services
         public string Decrypt(string cipherText)
         {
             if (string.IsNullOrEmpty(cipherText))
+            {
                 return null;
+            }
 
             using (var aes = Aes.Create())
             {

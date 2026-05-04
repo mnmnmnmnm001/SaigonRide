@@ -51,6 +51,7 @@ namespace SaigonRide.Services
         public async Task<RentalTransaction> GetRentalTransactionByVehicleCodeAsync(string vehicleCode)
         {
             var encryptedCode = _encryptionService.Encrypt(vehicleCode);
+            //crash if user enter wrong code, use ai fix it
             return await _context.RentalTransactions.FirstOrDefaultAsync(rt => rt.EncryptedVehicleCode == encryptedCode);
         }
 

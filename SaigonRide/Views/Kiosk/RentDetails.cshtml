@@ -6,7 +6,7 @@
 
 <h1>Rent @Model.Code</h1>
 <form asp-action="ProcessRent" method="post">
-    <input type="hidden" name="vehicleId" value="@Model.VehicleId" />
+    <input type="hidden" name="vehicleId" value="@Model.Code" />
     <div class="mb-3">
         <label>Start Station</label>
         <select name="stationId" class="form-control">

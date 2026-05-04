@@ -2,8 +2,8 @@ namespace SaigonRide.Models
 {
     public abstract class User
     {
-        public int UserId { get; set; }
-        public string BankNum { get; set; }
+        [System.ComponentModel.DataAnnotations.Key]
+        public string BankNum { get; set; } // Primary key, unique identifier
         public string ChosenPaymentCode { get; set; }
         public double Payed { get; set; }
         public string UserType { get; set; } // "LocalCommuter" or "ForeignTourist"

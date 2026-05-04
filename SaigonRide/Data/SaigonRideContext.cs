@@ -13,6 +13,8 @@ namespace SaigonRide.Data
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<Station> Stations { get; set; }
         public DbSet<Rental> Rentals { get; set; }
+        public DbSet<Admin> Admins { get; set; }
+        public DbSet<RentalTransaction> RentalTransactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

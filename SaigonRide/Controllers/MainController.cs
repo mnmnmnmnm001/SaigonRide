@@ -48,7 +48,7 @@ namespace SaigonRide.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ProcessRent(string vehicleId, int stationId, string userType, string bankNum, string passport, int minutes)
+        public async Task<IActionResult> ProcessRent(string vehicleId, int stationId, string userType, string bankNum, string passport, int minutes, string paymentMethod)
         {
             var vehicle = await _context.Vehicles.FindAsync(vehicleId);
             var station = await _context.Stations.FindAsync(stationId);
@@ -115,6 +115,8 @@ namespace SaigonRide.Controllers
         public async Task<IActionResult> Return()
         {
             ViewBag.Stations = await _context.Stations.ToListAsync();
+            // Load vehicles that are in-transition (State == 1)
+            ViewBag.Vehicles = await _context.Vehicles.Where(v => v.State == 1).ToListAsync();
             return View();
         }
 

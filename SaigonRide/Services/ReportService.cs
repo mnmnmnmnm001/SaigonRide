@@ -7,7 +7,7 @@ namespace SaigonRide.Services
     public interface IReportService
     {
         Task<RevenueByVehicleReport> GetRevenueByVehicleReport(DateTime startDate, DateTime endDate);
-        Task<StationInventoryReport> GetStationInventoryReport();
+        Task<List<StationInventoryReport>> GetStationInventoryReport();
     }
 
     public class RevenueByVehicleReport
@@ -75,26 +75,28 @@ namespace SaigonRide.Services
             };
         }
 
-        public async Task<StationInventoryReport> GetStationInventoryReport()
+        public async Task<List<StationInventoryReport>> GetStationInventoryReport()
         {
             var stations = await _context.Stations.ToListAsync();
 
-            if (!stations.Any())
-                return new StationInventoryReport();
-
-            var firstStation = stations.First();
-            var utilizationRatio = firstStation.GetRatio();
-            var status = utilizationRatio >= 0.8 ? "High" : (utilizationRatio >= 0.5 ? "Medium" : "Low");
-
-            return new StationInventoryReport
+            var result = new List<StationInventoryReport>();
+            foreach (var s in stations)
             {
-                StationId = firstStation.StationId,
-                StationName = firstStation.Name,
-                CurrentCapacity = firstStation.CurrentCapacity,
-                MaxCapacity = firstStation.MaxCapacity,
-                UtilizationRatio = utilizationRatio,
-                Status = status
-            };
+                var utilizationRatio = s.GetRatio();
+                var status = utilizationRatio >= 0.8 ? "High" : (utilizationRatio >= 0.5 ? "Medium" : "Low");
+
+                result.Add(new StationInventoryReport
+                {
+                    StationId = s.StationId,
+                    StationName = s.Name,
+                    CurrentCapacity = s.CurrentCapacity,
+                    MaxCapacity = s.MaxCapacity,
+                    UtilizationRatio = utilizationRatio,
+                    Status = status
+                });
+            }
+
+            return result;
         }
     }
 }

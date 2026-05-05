@@ -7,3 +7,9 @@
 <p>Final Charge: @ViewData["FinalFare"]</p>
 <p>Difference (refund/extra): @ViewData["Difference"]</p>
 <a asp-action="Index" class="btn btn-primary">Home</a>
+
+<script>
+    // after 6 seconds redirect to main index
+    setTimeout(function(){ window.location = '/' }, 6000);
+</script>
+

@@ -1,4 +1,4 @@
-@model SaigonRide.Services.StationInventoryReport
+@model IEnumerable<SaigonRide.Services.StationInventoryReport>
 
 @{
     ViewData["Title"] = "Inventory Report";
@@ -6,60 +6,63 @@
 
 <h1>Station Inventory / Utilization Report</h1>
 
-@if (Model != null)
+@if (Model != null && Model.Any())
 {
     <div class="row">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h5>@Model.StationName</h5>
-                </div>
-                <div class="card-body">
-                    <dl class="row">
-                        <dt class="col-sm-3">Station ID</dt>
-                        <dd class="col-sm-9">@Model.StationId</dd>
+        @foreach (var station in Model)
+        {
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>@station.StationName</h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-sm-4">Station ID</dt>
+                            <dd class="col-sm-8">@station.StationId</dd>
 
-                        <dt class="col-sm-3">Current Capacity</dt>
-                        <dd class="col-sm-9">@Model.CurrentCapacity / @Model.MaxCapacity</dd>
+                            <dt class="col-sm-4">Current Capacity</dt>
+                            <dd class="col-sm-8">@station.CurrentCapacity / @station.MaxCapacity</dd>
 
-                        <dt class="col-sm-3">Utilization Ratio</dt>
-                        <dd class="col-sm-9">@string.Format("{0:P2}", Model.UtilizationRatio)</dd>
+                            <dt class="col-sm-4">Utilization Ratio</dt>
+                            <dd class="col-sm-8">@string.Format("{0:P2}", station.UtilizationRatio)</dd>
 
-                        <dt class="col-sm-3">Status</dt>
-                        <dd class="col-sm-9">
-                            @if (Model.Status == "Low")
-                            {
-                                <span class="badge bg-danger" style="font-size: 1rem;">Low Inventory</span>
-                            }
-                            else if (Model.Status == "Medium")
-                            {
-                                <span class="badge bg-warning" style="font-size: 1rem;">Medium</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-success" style="font-size: 1rem;">High</span>
-                            }
-                        </dd>
-                    </dl>
+                            <dt class="col-sm-4">Status</dt>
+                            <dd class="col-sm-8">
+                                @if (station.Status == "Low")
+                                {
+                                    <span class="badge bg-danger" style="font-size: 1rem;">Low Inventory</span>
+                                }
+                                else if (station.Status == "Medium")
+                                {
+                                    <span class="badge bg-warning" style="font-size: 1rem;">Medium</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success" style="font-size: 1rem;">High</span>
+                                }
+                            </dd>
+                        </dl>
 
-                    <div class="mt-3">
-                        <h6>Capacity Visualization</h6>
-                        <div class="progress" style="height: 50px;">
-                            <div class="progress-bar" role="progressbar" style="width: @string.Format("{0:P0}", Model.UtilizationRatio)" aria-valuenow="@Model.CurrentCapacity" aria-valuemin="0" aria-valuemax="@Model.MaxCapacity">
-                                @string.Format("{0:P0}", Model.UtilizationRatio)
+                        <div class="mt-3">
+                            <h6>Capacity Visualization</h6>
+                            <div class="progress" style="height: 30px;">
+                                <div class="progress-bar" role="progressbar" style="width: @string.Format("{0:P0}", station.UtilizationRatio)" aria-valuenow="@station.CurrentCapacity" aria-valuemin="0" aria-valuemax="@station.MaxCapacity">
+                                    @string.Format("{0:P0}", station.UtilizationRatio)
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    @if (Model.Status == "Low")
-                    {
-                        <div class="alert alert-warning mt-3">
-                            <strong>Low Inventory Warning:</strong> This station has less than 20% capacity. Vehicles returned here will receive a 15% discount!
-                        </div>
-                    }
+                        @if (station.Status == "Low")
+                        {
+                            <div class="alert alert-warning mt-3">
+                                <strong>Low Inventory Warning:</strong> This station has less than 20% capacity. Vehicles returned here will receive a 15% discount!
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
+        }
     </div>
 }
 else

@@ -140,5 +140,22 @@ namespace SaigonRide.Controllers
             var vehicles = await _context.Vehicles.ToListAsync();
             return View(vehicles);
         }
+
+        // GET: Rental/GenerateReport
+        public async Task<IActionResult> GenerateReport(DateTime startDate, DateTime endDate)
+        {
+            var report = await _context.Rentals
+                .Where(r => r.Status == 1 && r.TimeStart >= startDate && r.TimeStart <= endDate)
+                .GroupBy(r => r.Vehicle.Type)
+                .Select(g => new {
+                    VehicleType = g.Key,
+                    RentalCount = g.Count(),
+                    TotalRevenue = g.Sum(r => r.FinalFare),
+                    TotalDiscount = g.Sum(r => r.DiscountApplied)
+                })
+                .ToListAsync();
+
+            return View(report);
+        }
     }
 }

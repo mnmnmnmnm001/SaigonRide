@@ -6,3 +6,8 @@
 <p>Minutes: @ViewData["Minutes"]</p>
 <p>Charged: @ViewData["MoneyRented"]</p>
 <a asp-action="Index" class="btn btn-primary">Home</a>
+
+<script>
+    // after 6 seconds redirect to main index
+    setTimeout(function(){ window.location = '/' }, 6000);
+</script>

@@ -18,7 +18,7 @@
     </div>
     <div class="mb-3">
         <label>User Type</label>
-        <select name="userType" class="form-control">
+        <select id="userType" name="userType" class="form-control">
             <option value="LocalCommuter">Local</option>
             <option value="ForeignTourist">Foreign</option>
         </select>
@@ -35,6 +35,44 @@
         <label>Minutes</label>
         <input type="number" name="minutes" class="form-control" value="30" />
     </div>
+    <div class="mb-3">
+        <label>Payment Method</label>
+        <select id="paymentMethod" name="paymentMethod" class="form-control">
+            <option value="">-- Select Payment Method --</option>
+        </select>
+    </div>
     <button class="btn btn-primary" type="submit">Confirm Rent</button>
     <a asp-action="Rent" class="btn btn-secondary">Back</a>
 </form>
+
+<script>
+    document.getElementById('userType').addEventListener('change', function() {
+        var userType = this.value;
+        var paymentSelect = document.getElementById('paymentMethod');
+        paymentSelect.innerHTML = '<option value="">-- Select Payment Method --</option>';
+
+        if (userType === 'LocalCommuter') {
+            paymentSelect.innerHTML += '<option value="Cash">Cash</option>';
+            paymentSelect.innerHTML += '<option value="MoMo">MoMo</option>';
+            paymentSelect.innerHTML += '<option value="VNPay">VNPay</option>';
+        } else if (userType === 'ForeignTourist') {
+            paymentSelect.innerHTML += '<option value="Cash">Cash</option>';
+            paymentSelect.innerHTML += '<option value="ApplePay">ApplePay</option>';
+            paymentSelect.innerHTML += '<option value="PayPal">PayPal</option>';
+        }
+    });
+
+    // Trigger change on page load
+    document.getElementById('userType').dispatchEvent(new Event('change'));
+</script>
+
+<div class="mt-4">
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["Error"]
+        </div>
+    }
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+</div>

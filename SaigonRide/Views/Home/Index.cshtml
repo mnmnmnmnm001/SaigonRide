@@ -49,33 +49,36 @@
         </div>
     </div>
 
-    <div class="row mt-3">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Total Rentals</h5>
-                    <p class="card-text display-6">@ViewData["TotalRentals"]</p>
-                    <a href="/Rental" class="btn btn-primary">View Rentals</a>
+    @if (!isAdmin)
+    {
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Rentals</h5>
+                        <p class="card-text display-6">@ViewData["TotalRentals"]</p>
+                        <a href="/Rental" class="btn btn-primary">View Rentals</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Revenue</h5>
+                        <p class="card-text display-6">@string.Format("{0:N0}", ViewData["TotalRevenue"]) VND</p>
+                        <a href="/Report/RevenueReport" class="btn btn-primary">View Report</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">System Status</h5>
+                        <p class="card-text"><span class="badge bg-success">Active</span></p>
+                        <a href="/Report/InventoryReport" class="btn btn-primary">Inventory Report</a>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Total Revenue</h5>
-                    <p class="card-text display-6">@string.Format("{0:N0}", ViewData["TotalRevenue"]) VND</p>
-                    <a href="/Report/RevenueReport" class="btn btn-primary">View Report</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">System Status</h5>
-                    <p class="card-text"><span class="badge bg-success">Active</span></p>
-                    <a href="/Report/InventoryReport" class="btn btn-primary">Inventory Report</a>
-                </div>
-            </div>
-        </div>
-    </div>
+    }
 </div>

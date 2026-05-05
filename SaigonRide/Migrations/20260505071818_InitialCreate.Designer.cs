@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SaigonRide.Data;
 
@@ -11,9 +12,11 @@ using SaigonRide.Data;
 namespace SaigonRide.Migrations
 {
     [DbContext(typeof(SaigonRideContext))]
-    partial class SaigonRideContextModelSnapshot : ModelSnapshot
+    [Migration("20260505071818_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,9 +32,6 @@ namespace SaigonRide.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdminId"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -78,11 +78,13 @@ namespace SaigonRide.Migrations
                     b.Property<DateTime>("TimeStart")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("VehicleId")
-                        .HasColumnType("int");
+                    b.Property<string>("VehicleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("RentalId");
 
@@ -151,21 +153,12 @@ namespace SaigonRide.Migrations
                     b.Property<int>("CurrentCapacity")
                         .HasColumnType("int");
 
-                    b.Property<double>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Longitude")
-                        .HasColumnType("float");
-
                     b.Property<int>("MaxCapacity")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("Ratio")
-                        .HasColumnType("float");
 
                     b.HasKey("StationId");
 
@@ -175,56 +168,30 @@ namespace SaigonRide.Migrations
                         new
                         {
                             StationId = 1,
-                            CurrentCapacity = 15,
-                            Latitude = 10.772500000000001,
-                            Longitude = 106.6992,
-                            MaxCapacity = 20,
-                            Name = "Ben Thanh Market",
-                            Ratio = 0.75
+                            CurrentCapacity = 3,
+                            MaxCapacity = 12,
+                            Name = "Ben Thanh Market"
                         },
                         new
                         {
                             StationId = 2,
-                            CurrentCapacity = 8,
-                            Latitude = 10.7758,
-                            Longitude = 106.7008,
-                            MaxCapacity = 30,
-                            Name = "District 1 Hub",
-                            Ratio = 0.27000000000000002
+                            CurrentCapacity = 3,
+                            MaxCapacity = 10,
+                            Name = "District 1 Hub"
                         },
                         new
                         {
                             StationId = 3,
-                            CurrentCapacity = 28,
-                            Latitude = 10.776899999999999,
-                            Longitude = 106.7009,
-                            MaxCapacity = 35,
-                            Name = "Saigon Center",
-                            Ratio = 0.80000000000000004
-                        },
-                        new
-                        {
-                            StationId = 4,
-                            CurrentCapacity = 5,
-                            Latitude = 10.807399999999999,
-                            Longitude = 106.6756,
-                            MaxCapacity = 25,
-                            Name = "Tan Binh Station",
-                            Ratio = 0.20000000000000001
+                            CurrentCapacity = 2,
+                            MaxCapacity = 5,
+                            Name = "Saigon Center"
                         });
                 });
 
             modelBuilder.Entity("SaigonRide.Models.User", b =>
                 {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
-
                     b.Property<string>("BankNum")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ChosenPaymentCode")
                         .IsRequired()
@@ -238,7 +205,7 @@ namespace SaigonRide.Migrations
                         .HasMaxLength(21)
                         .HasColumnType("nvarchar(21)");
 
-                    b.HasKey("UserId");
+                    b.HasKey("BankNum");
 
                     b.ToTable("Users");
 
@@ -249,15 +216,8 @@ namespace SaigonRide.Migrations
 
             modelBuilder.Entity("SaigonRide.Models.Vehicle", b =>
                 {
-                    b.Property<int>("VehicleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VehicleId"));
-
                     b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CurrentPos")
                         .IsRequired()
@@ -273,61 +233,71 @@ namespace SaigonRide.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("VehicleId");
+                    b.HasKey("Code");
 
                     b.ToTable("Vehicles");
 
                     b.HasData(
                         new
                         {
-                            VehicleId = 1,
                             Code = "SB001",
-                            CurrentPos = "Station 1",
+                            CurrentPos = "Ben Thanh Market",
                             FarePerMin = 500.0,
                             State = 0,
                             Type = "StandardBike"
                         },
                         new
                         {
-                            VehicleId = 2,
                             Code = "SB002",
-                            CurrentPos = "Station 1",
+                            CurrentPos = "Ben Thanh Market",
                             FarePerMin = 500.0,
                             State = 0,
                             Type = "StandardBike"
                         },
                         new
                         {
-                            VehicleId = 3,
                             Code = "EB001",
-                            CurrentPos = "Station 2",
+                            CurrentPos = "Ben Thanh Market",
                             FarePerMin = 1000.0,
                             State = 0,
                             Type = "EBike"
                         },
                         new
                         {
-                            VehicleId = 4,
                             Code = "EB002",
-                            CurrentPos = "Station 2",
+                            CurrentPos = "District 1 Hub",
                             FarePerMin = 1000.0,
                             State = 0,
                             Type = "EBike"
                         },
                         new
                         {
-                            VehicleId = 5,
                             Code = "ES001",
-                            CurrentPos = "Station 3",
+                            CurrentPos = "Saigon Center",
                             FarePerMin = 1500.0,
                             State = 0,
                             Type = "Scooter"
                         },
                         new
                         {
-                            VehicleId = 6,
                             Code = "ES002",
-                            CurrentPos = "Station 3",
+                            CurrentPos = "District 1 Hub",
+                            FarePerMin = 1500.0,
+                            State = 0,
+                            Type = "Scooter"
+                        },
+                        new
+                        {
+                            Code = "ES003",
+                            CurrentPos = "Saigon Center",
+                            FarePerMin = 1500.0,
+                            State = 0,
+                            Type = "Scooter"
+                        },
+                        new
+                        {
+                            Code = "ES004",
+                            CurrentPos = "District 1 Hub",
                             FarePerMin = 1500.0,
                             State = 0,
                             Type = "Scooter"
@@ -353,7 +323,6 @@ namespace SaigonRide.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = 3,
                             BankNum = "INTL001",
                             ChosenPaymentCode = "applepay",
                             Payed = 75000.0,
@@ -364,7 +333,6 @@ namespace SaigonRide.Migrations
                         },
                         new
                         {
-                            UserId = 4,
                             BankNum = "INTL002",
                             ChosenPaymentCode = "paypal",
                             Payed = 150000.0,
@@ -390,7 +358,6 @@ namespace SaigonRide.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = 1,
                             BankNum = "0123456789",
                             ChosenPaymentCode = "momo",
                             Payed = 50000.0,
@@ -400,7 +367,6 @@ namespace SaigonRide.Migrations
                         },
                         new
                         {
-                            UserId = 2,
                             BankNum = "0987654321",
                             ChosenPaymentCode = "vnpay",
                             Payed = 100000.0,

@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using SaigonRide.Data;
 using SaigonRide.Models;
+using SaigonRide.Attributes;
 using Microsoft.EntityFrameworkCore;
 
 namespace SaigonRide.Controllers
 {
+    [AdminAuthentication]
     public class RentalController : Controller
     {
         private readonly SaigonRideContext _context;
@@ -123,12 +125,12 @@ namespace SaigonRide.Controllers
 
         // GET: Rental/UserRentals/5
         /*
-        public async Task<IActionResult> UserRentals(int? id)
+        public async Task<IActionResult> UserRentals(string? id)
         {
             if (id == null)
                 return NotFound();
 
-            var rentals = await _rentalService.GetUserRentals(id.Value);
+            var rentals = await _rentalService.GetUserRentals(id);
             return View(rentals);
         }*/
 

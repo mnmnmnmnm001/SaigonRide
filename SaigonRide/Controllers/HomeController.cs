@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using SaigonRide.Models;
 using SaigonRide.Data;
+using SaigonRide.Attributes;
 using System.Diagnostics;
 
 namespace SaigonRide.Controllers
 {
+    [AdminAuthentication]
     public class HomeController : Controller
     {
         private readonly SaigonRideContext _context;
@@ -21,6 +23,7 @@ namespace SaigonRide.Controllers
             ViewData["TotalStations"] = _context.Stations.Count();
             ViewData["TotalRentals"] = _context.Rentals.Count();
             ViewData["TotalRevenue"] = _context.Rentals.Where(r => r.Status == 1).Sum(r => r.FinalFare);
+            ViewData["IsAdmin"] = !string.IsNullOrEmpty(HttpContext.Session.GetString("AdminUsername"));
 
             return View();
         }

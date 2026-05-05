@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using SaigonRide.Services;
+using SaigonRide.Attributes;
 
 namespace SaigonRide.Controllers
 {
+    [AdminAuthentication]
     public class ReportController : Controller
     {
         private readonly IReportService _reportService;

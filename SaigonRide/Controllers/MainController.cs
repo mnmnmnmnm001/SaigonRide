@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SaigonRide.Controllers
 {
-    public class KioskController : Controller
+    public class MainController : Controller
     {
         private readonly SaigonRideContext _context;
         private readonly IFareCalculationService _fareService;
@@ -14,7 +14,7 @@ namespace SaigonRide.Controllers
         private readonly IPaymentService _paymentService;
         private readonly IEncryptionService _encryptionService;
 
-        public KioskController(SaigonRideContext context, IFareCalculationService fareService, IRentalTransactionService transactionService, IPaymentService paymentService, IEncryptionService encryptionService)
+        public MainController(SaigonRideContext context, IFareCalculationService fareService, IRentalTransactionService transactionService, IPaymentService paymentService, IEncryptionService encryptionService)
         {
             _context = context;
             _fareService = fareService;

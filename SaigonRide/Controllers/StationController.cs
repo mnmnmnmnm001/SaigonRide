@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using SaigonRide.Data;
 using SaigonRide.Models;
+using SaigonRide.Attributes;
 using Microsoft.EntityFrameworkCore;
 
 namespace SaigonRide.Controllers
 {
+    [AdminAuthentication]
     public class StationController : Controller
     {
         private readonly SaigonRideContext _context;

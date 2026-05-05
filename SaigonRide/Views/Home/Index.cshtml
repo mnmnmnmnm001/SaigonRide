@@ -1,9 +1,20 @@
 ﻿@{
     ViewData["Title"] = "SaigonRide - Vehicle Rental System";
+    var isAdmin = ViewData["IsAdmin"] is bool && (bool)ViewData["IsAdmin"];
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome to SaigonRide</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-4 mb-0">Welcome to SaigonRide</h1>
+    <div>
+        <span class="me-3">Admin: <strong>@(isAdmin ? "Logged In" : "Not Logged In")</strong></span>
+        @if (isAdmin)
+        {
+            <a href="/Admin/Logout" class="btn btn-danger btn-sm">Logout</a>
+        }
+    </div>
+</div>
+
+<div class="text-center mb-4">
     <p>Distributed Vehicle Rental System</p>
 </div>
 

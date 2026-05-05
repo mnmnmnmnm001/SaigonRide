@@ -29,13 +29,22 @@ namespace SaigonRide.Controllers
                 return View();
             }
 
-            if (await _authService.AuthenticateAsync(username, password))
+            // Hardcoded credentials as specified
+            if (username == "qwe" && password == "1234560")
             {
+                HttpContext.Session.SetString("AdminUsername", username);
                 return RedirectToAction("Index", "Home");
             }
 
             ModelState.AddModelError("", "Invalid credentials");
             return View();
+        }
+
+        // GET: Admin/Logout
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Main");
         }
     }
 }

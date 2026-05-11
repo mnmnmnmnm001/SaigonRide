@@ -4,45 +4,149 @@
     var vehicles = ViewBag.Vehicles as List<SaigonRide.Models.Vehicle> ?? new List<SaigonRide.Models.Vehicle>();
 }
 
-<h1>Return Vehicle</h1>
-<form asp-action="ProcessReturn" method="post">
-    <div class="mb-3">
-        <label>Vehicle Code</label>
-        <select name="vehicleCode" class="form-control">
-            <option value="">-- Select a Vehicle in Transit --</option>
-            @foreach(var v in vehicles)
-            {
-                <option value="@v.Code">@v.Code - @v.Type (@v.CurrentPos)</option>
-            }
-        </select>
-    </div>
-    <div class="mb-3">
-        <label>Return Station</label>
-        <select name="returnStationId" class="form-control">
-            @foreach(var s in stations)
-            {
-                <option value="@s.StationId">@s.Name (@s.CurrentCapacity/@s.MaxCapacity)</option>
-            }
-        </select>
-    </div>
-    <button class="btn btn-primary" type="submit">Return</button>
-</form>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title mb-0">Return Vehicle</h2>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>Error!</strong> @TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
 
-<div class="mt-4">
-    @if (ViewData.ModelState != null && ViewData.ModelState.Values.SelectMany(v => v.Errors).Any())
-    {
-        <div class="alert alert-danger">
-            <ul>
-                @foreach (var e in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    <li>@e.ErrorMessage</li>
-                }
-            </ul>
+                    @if (ViewData.ModelState != null && ViewData.ModelState.Values.SelectMany(v => v.Errors).Any())
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>Validation Errors:</strong>
+                            <ul class="mb-0">
+                                @foreach (var e in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@e.ErrorMessage</li>
+                                }
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form asp-action="ProcessReturn" method="post" id="returnForm" novalidate>
+                        <div class="mb-3">
+                            <label for="vehicleCode" class="form-label">Vehicle Code <span class="text-danger">*</span></label>
+                            <select name="vehicleCode" id="vehicleCode" class="form-control" required>
+                                <option value="">-- Select a Vehicle in Transit --</option>
+                                @foreach(var v in vehicles)
+                                {
+                                    <option value="@v.Code">@v.Code - @v.Type (@v.CurrentPos)</option>
+                                }
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a vehicle to return.
+                            </div>
+                            @if (vehicles.Count == 0)
+                            {
+                                <small class="form-text text-muted d-block mt-2">No vehicles currently in transit.</small>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="returnStationId" class="form-label">Return Station <span class="text-danger">*</span></label>
+                            <select name="returnStationId" id="returnStationId" class="form-control" required>
+                                <option value="">-- Select a Return Station --</option>
+                                @foreach(var s in stations)
+                                {
+                                    var capacityPercent = (s.CurrentCapacity * 100) / s.MaxCapacity;
+                                    <option value="@s.StationId" data-capacity="@s.CurrentCapacity" data-max-capacity="@s.MaxCapacity">
+                                        @s.Name (@s.CurrentCapacity/@s.MaxCapacity) @(capacityPercent >= 90 ? "- ALMOST FULL" : "")
+                                    </option>
+                                }
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a return station.
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button class="btn btn-primary" type="submit" id="submitBtn">Return Vehicle</button>
+                            <a asp-action="Index" asp-controller="Main" class="btn btn-secondary">Back</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    }
-
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">@TempData["Error"]</div>
-    }
+    </div>
 </div>
+
+<script>
+    const form = document.getElementById('returnForm');
+    const vehicleSelect = document.getElementById('vehicleCode');
+    const stationSelect = document.getElementById('returnStationId');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Form submit validation
+    form.addEventListener('submit', function(event) {
+        // Check if selections are made
+        if (!vehicleSelect.value) {
+            event.preventDefault();
+            event.stopPropagation();
+            vehicleSelect.classList.add('is-invalid');
+            showAlert('Please select a vehicle to return.', 'danger');
+            return false;
+        }
+
+        if (!stationSelect.value) {
+            event.preventDefault();
+            event.stopPropagation();
+            stationSelect.classList.add('is-invalid');
+            showAlert('Please select a return station.', 'danger');
+            return false;
+        }
+
+        // Check if station has capacity
+        const selectedOption = stationSelect.options[stationSelect.selectedIndex];
+        const currentCapacity = parseInt(selectedOption.getAttribute('data-capacity'));
+        const maxCapacity = parseInt(selectedOption.getAttribute('data-max-capacity'));
+
+        if (currentCapacity >= maxCapacity) {
+            event.preventDefault();
+            event.stopPropagation();
+            stationSelect.classList.add('is-invalid');
+            showAlert('Selected station is at full capacity. Please choose another station.', 'danger');
+            return false;
+        }
+
+        form.classList.add('was-validated');
+    }, false);
+
+    // Remove is-invalid class when user selects values
+    vehicleSelect.addEventListener('change', function() {
+        this.classList.remove('is-invalid');
+    });
+
+    stationSelect.addEventListener('change', function() {
+        this.classList.remove('is-invalid');
+    });
+
+    // Helper function to show alerts
+    function showAlert(message, type = 'danger') {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        alertDiv.setAttribute('role', 'alert');
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+
+        const formCard = form.closest('.card-body');
+        formCard.insertBefore(alertDiv, form);
+
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
+</script>

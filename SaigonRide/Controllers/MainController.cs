@@ -50,13 +50,66 @@ namespace SaigonRide.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProcessRent(string vehicleId, int stationId, string userType, string bankNum, string passport, int minutes, string paymentMethod)
         {
+            // Input validation
+            if (string.IsNullOrWhiteSpace(vehicleId))
+            {
+                TempData["Error"] = "Vehicle ID is required.";
+                return RedirectToAction(nameof(Rent));
+            }
+
+            if (stationId <= 0)
+            {
+                TempData["Error"] = "Please select a valid station.";
+                return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
+            }
+
+            if (string.IsNullOrWhiteSpace(bankNum))
+            {
+                TempData["Error"] = "Bank number is required.";
+                return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
+            }
+
+            if (string.IsNullOrWhiteSpace(userType) || (userType != "LocalCommuter" && userType != "ForeignTourist"))
+            {
+                TempData["Error"] = "Please select a valid user type.";
+                return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
+            }
+
+            if (userType == "ForeignTourist" && string.IsNullOrWhiteSpace(passport))
+            {
+                TempData["Error"] = "Passport number is required for foreign tourists.";
+                return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
+            }
+
+            if (string.IsNullOrWhiteSpace(paymentMethod))
+            {
+                TempData["Error"] = "Please select a payment method.";
+                return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
+            }
+
+            if (minutes <= 0 || minutes > 1440)
+            {
+                TempData["Error"] = "Rental duration must be between 1 and 1440 minutes (24 hours).";
+                return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
+            }
+
             var vehicle = await _context.Vehicles.FindAsync(vehicleId);
             var station = await _context.Stations.FindAsync(stationId);
-            if (vehicle == null || station == null) return NotFound();
-
-            if (minutes <= 0)
+            if (vehicle == null || station == null)
             {
-                TempData["Error"] = "Minutes must be greater than 0.";
+                TempData["Error"] = "Vehicle or station not found.";
+                return RedirectToAction(nameof(Rent));
+            }
+
+            if (vehicle.State != 0)
+            {
+                TempData["Error"] = "This vehicle is no longer available for rent.";
+                return RedirectToAction(nameof(Rent));
+            }
+
+            if (station.CurrentCapacity <= 0)
+            {
+                TempData["Error"] = "The selected station has no available capacity.";
                 return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
             }
 
@@ -124,27 +177,51 @@ namespace SaigonRide.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProcessReturn(string vehicleCode, int returnStationId)
         {
-            if (string.IsNullOrEmpty(vehicleCode))
+            // Input validation
+            if (string.IsNullOrWhiteSpace(vehicleCode))
             {
-                ModelState.AddModelError("", "Vehicle code is required.");
-                return View("Return");
+                TempData["Error"] = "Vehicle code is required. Please select a vehicle.";
+                return RedirectToAction(nameof(Return));
+            }
+
+            if (returnStationId <= 0)
+            {
+                TempData["Error"] = "Please select a valid return station.";
+                return RedirectToAction(nameof(Return));
+            }
+
+            var vehicle = await _context.Vehicles.FirstOrDefaultAsync(v => v.Code == vehicleCode);
+            if (vehicle == null)
+            {
+                TempData["Error"] = "Vehicle not found.";
+                return RedirectToAction(nameof(Return));
+            }
+
+            if (vehicle.State != 1)
+            {
+                TempData["Error"] = "Selected vehicle is not currently in transit.";
+                return RedirectToAction(nameof(Return));
             }
 
             var transaction = await _transactionService.GetRentalTransactionByVehicleCodeAsync(vehicleCode);
             if (transaction == null)
             {
-                ModelState.AddModelError("", "Rental transaction not found for provided vehicle code.");
-                return View("Return");
+                TempData["Error"] = "Rental transaction not found for the provided vehicle code.";
+                return RedirectToAction(nameof(Return));
             }
 
             var returnStation = await _context.Stations.FindAsync(returnStationId);
             if (returnStation == null)
             {
-                ModelState.AddModelError("", "Return station not found.");
-                return View("Return");
+                TempData["Error"] = "Return station not found.";
+                return RedirectToAction(nameof(Return));
             }
 
-            var vehicle = await _context.Vehicles.FirstOrDefaultAsync(v => v.Code == vehicleCode);
+            if (returnStation.CurrentCapacity >= returnStation.MaxCapacity)
+            {
+                TempData["Error"] = "Return station is at full capacity. Please choose another station.";
+                return RedirectToAction(nameof(Return));
+            }
 
             bool isLowInventory = _fareService.IsLowInventory(returnStation);
             double finalFare = _fareService.ApplyDiscount(transaction.MoneyRented, isLowInventory);

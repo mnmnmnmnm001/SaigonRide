@@ -18,39 +18,24 @@
         </div>
     </div>
 
-    <!-- Admin Login Panel at Bottom Right -->
-    <div style="position: fixed; bottom: 20px; right: 20px; width: 300px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 15px;">
-        <h6 class="mb-3" style="border-bottom: 1px solid #dee2e6; padding-bottom: 10px;">Admin Panel</h6>
-
+    <!-- Admin Panel at Bottom Right -->
+    <div style="position: fixed; bottom: 20px; right: 20px;">
         @{
             var isLoggedIn = !string.IsNullOrEmpty(Context.Session.GetString("AdminUsername"));
         }
 
         @if (isLoggedIn)
         {
-            <div class="alert alert-success mb-2" style="padding: 0.5rem 0.75rem; margin-bottom: 0.75rem;">
-                <small><strong>Logged In</strong></small>
+            <div class="btn-group-vertical" style="width: 140px;">
+                <a href="/Home/Index" class="btn btn-success btn-sm">📊 Dashboard</a>
+                <a href="/Admin/Logout" class="btn btn-danger btn-sm">🚪 Logout</a>
             </div>
-            <a href="/Home/Index" class="btn btn-success btn-sm w-100 mb-2">Go to Dashboard</a>
-            <a href="/Admin/Logout" class="btn btn-danger btn-sm w-100">Logout</a>
         }
         else
         {
-            <form action="/Admin/Login" method="post" style="font-size: 0.875rem;">
-                @Html.AntiForgeryToken()
-
-                <div class="mb-2">
-                    <label for="username" class="form-label mb-1">Username</label>
-                    <input type="text" class="form-control form-control-sm" id="username" name="username" required style="font-size: 0.875rem;">
-                </div>
-
-                <div class="mb-2">
-                    <label for="password" class="form-label mb-1">Password</label>
-                    <input type="password" class="form-control form-control-sm" id="password" name="password" required style="font-size: 0.875rem;">
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-sm w-100">Login</button>
-            </form>
+            <a href="/Admin/Login" class="btn btn-dark btn-lg" style="font-size: 1rem; padding: 10px 20px;">
+                🔐 Login as Admin
+            </a>
         }
     </div>
 </div>

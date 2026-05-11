@@ -1,15 +1,90 @@
 @{
     ViewData["Title"] = "Return Result";
 }
-<h1>Return Processed</h1>
-<p>Vehicle Code: @ViewData["VehicleCode"]</p>
-<p>Original Charge: @ViewData["MoneyRented"]</p>
-<p>Final Charge: @ViewData["FinalFare"]</p>
-<p>Difference (refund/extra): @ViewData["Difference"]</p>
-<a asp-action="Index" class="btn btn-primary">Home</a>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <h2 class="card-title mb-0">✓ Vehicle Return Processed Successfully</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <h4 class="alert-heading">Success!</h4>
+                        <p>Your vehicle has been returned and processed. You will be redirected to the main screen in <strong><span id="countdown">7</span></strong> seconds.</p>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <h5 class="text-muted">Vehicle Code</h5>
+                                <h3 class="text-primary">@ViewData["VehicleCode"]</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <h5 class="text-muted">Status</h5>
+                                <h3 class="text-success">✓ Returned</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <div class="info-box">
+                                <h5 class="text-muted">Original Charge</h5>
+                                <h3 class="text-warning">@ViewData["MoneyRented"] VND</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-box">
+                                <h5 class="text-muted">Final Charge</h5>
+                                <h3 class="text-info">@ViewData["FinalFare"] VND</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-box">
+                                <h5 class="text-muted">@(double.Parse(ViewData["Difference"]?.ToString() ?? "0") < 0 ? "Refund" : "Extra Charge")</h5>
+                                <h3 class="@(double.Parse(ViewData["Difference"]?.ToString() ?? "0") < 0 ? "text-success" : "text-danger")">@Math.Abs(double.Parse(ViewData["Difference"]?.ToString() ?? "0")) VND</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 text-center">
+                        <a asp-action="Index" class="btn btn-primary btn-lg">Return to Home Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .info-box {
+        padding: 1.5rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    html[data-theme="dark"] .info-box {
+        background-color: #3d3d3d;
+    }
+</style>
 
 <script>
-    // after 6 seconds redirect to main index
-    setTimeout(function(){ window.location = '/' }, 6000);
+    let secondsLeft = 7;
+    const countdownElement = document.getElementById('countdown');
+
+    const countdownInterval = setInterval(function() {
+        secondsLeft--;
+        countdownElement.textContent = secondsLeft;
+
+        if (secondsLeft <= 0) {
+            clearInterval(countdownInterval);
+            window.location.href = '/Main/Index';
+        }
+    }, 1000);
 </script>
 

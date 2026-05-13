@@ -66,22 +66,60 @@ namespace SaigonRide.Data
         {
             // Seed Stations
             modelBuilder.Entity<Station>().HasData(
-                new Station { StationId = 1, Name = "Ben Thanh Market", CurrentCapacity = 3, MaxCapacity = 12 },
-                new Station { StationId = 2, Name = "District 1 Hub", CurrentCapacity = 3, MaxCapacity = 10 },
-                new Station { StationId = 3, Name = "Saigon Center", CurrentCapacity = 2, MaxCapacity = 5 }
+                new Station { StationId = 1, Name = "Ben Thanh Central Hub", CurrentCapacity = 5, MaxCapacity = 20 },
+                new Station { StationId = 2, Name = "September 23rd Park Station", CurrentCapacity = 5, MaxCapacity = 15 },
+                new Station { StationId = 3, Name = "Ham Nghi Transit Center", CurrentCapacity = 4, MaxCapacity = 15 },
+                new Station { StationId = 4, Name = "Saigon Riverside Station", CurrentCapacity = 3, MaxCapacity = 12 },
+                new Station { StationId = 5, Name = "Notre Dame Cathedral Stop", CurrentCapacity = 3, MaxCapacity = 10 },
+                new Station { StationId = 6, Name = "East Gate Terminal", CurrentCapacity = 6, MaxCapacity = 25 },
+                new Station { StationId = 7, Name = "West Gate Terminal", CurrentCapacity = 6, MaxCapacity = 25 },
+                new Station { StationId = 8, Name = "New East City Hub", CurrentCapacity = 4, MaxCapacity = 20 },
+                new Station { StationId = 9, Name = "An Suong Gateway", CurrentCapacity = 4, MaxCapacity = 15 },
+                new Station { StationId = 10, Name = "Saigon Railway Station", CurrentCapacity = 4, MaxCapacity = 15 },
+                new Station { StationId = 11, Name = "University Village Hub", CurrentCapacity = 8, MaxCapacity = 30 },
+                new Station { StationId = 12, Name = "HCMC Tech Campus Station", CurrentCapacity = 5, MaxCapacity = 20 },
+                new Station { StationId = 13, Name = "Economy University Stop", CurrentCapacity = 3, MaxCapacity = 12 },
+                new Station { StationId = 14, Name = "Agriculture Campus Station", CurrentCapacity = 4, MaxCapacity = 15 },
+                new Station { StationId = 15, Name = "Thao Diep Expat Village", CurrentCapacity = 4, MaxCapacity = 15 },
+                new Station { StationId = 16, Name = "Phu My Hung Center", CurrentCapacity = 5, MaxCapacity = 20 },
+                new Station { StationId = 17, Name = "Tan Son Nhat Airport Station", CurrentCapacity = 5, MaxCapacity = 15 },
+                new Station { StationId = 18, Name = "Chinatown Terminal", CurrentCapacity = 6, MaxCapacity = 20 },
+                new Station { StationId = 19, Name = "Gia Dinh Park Station", CurrentCapacity = 4, MaxCapacity = 15 },
+                new Station { StationId = 20, Name = "Dam Sen Theme Park Stop", CurrentCapacity = 4, MaxCapacity = 15 }
             );
 
             // Seed Vehicles
-            modelBuilder.Entity<Vehicle>().HasData(
-                new Vehicle { Code = "SB001", Type = "StandardBike", FarePerMin = 500, State = 0, CurrentPos = "Ben Thanh Market" },
-                new Vehicle { Code = "SB002", Type = "StandardBike", FarePerMin = 500, State = 0, CurrentPos = "Ben Thanh Market" },
-                new Vehicle { Code = "EB001", Type = "EBike", FarePerMin = 1000, State = 0, CurrentPos = "Ben Thanh Market" },
-                new Vehicle { Code = "EB002", Type = "EBike", FarePerMin = 1000, State = 0, CurrentPos = "District 1 Hub" },
-                new Vehicle { Code = "ES001", Type = "Scooter", FarePerMin = 1500, State = 0, CurrentPos = "Saigon Center" },
-                new Vehicle { Code = "ES002", Type = "Scooter", FarePerMin = 1500, State = 0, CurrentPos = "District 1 Hub"},
-                new Vehicle { Code = "ES003", Type = "Scooter", FarePerMin = 1500, State = 0, CurrentPos = "Saigon Center" },
-                new Vehicle { Code = "ES004", Type = "Scooter", FarePerMin = 1500, State = 0, CurrentPos = "District 1 Hub" }
-            );
+            var vehicles = new List<Vehicle>();
+            string[] types = { "StandardBike", "EBike", "Scooter" };
+            string[] stationNames = { 
+                "Ben Thanh Central Hub", "September 23rd Park Station", "Ham Nghi Transit Center", 
+                "Saigon Riverside Station", "Notre Dame Cathedral Stop", "East Gate Terminal", 
+                "West Gate Terminal", "New East City Hub", "An Suong Gateway", "Saigon Railway Station",
+                "University Village Hub", "HCMC Tech Campus Station", "Economy University Stop",
+                "Agriculture Campus Station", "Thao Diep Expat Village", "Phu My Hung Center",
+                "Tan Son Nhat Airport Station", "Chinatown Terminal", "Gia Dinh Park Station",
+                "Dam Sen Theme Park Stop"
+            };
+
+            int vCount = 1;
+            foreach (var station in stationNames)
+            {
+                // Add 1 of each type to every station
+                foreach (var type in types)
+                {
+                    string prefix = type == "StandardBike" ? "SB" : (type == "EBike" ? "EB" : "ES");
+                    vehicles.Add(new Vehicle { 
+                        Code = $"{prefix}{vCount:D3}", 
+                        Type = type, 
+                        FarePerMin = type == "StandardBike" ? 500 : (type == "EBike" ? 1000 : 1500), 
+                        State = 0, 
+                        CurrentPos = station 
+                    });
+                    vCount++;
+                }
+            }
+
+            modelBuilder.Entity<Vehicle>().HasData(vehicles);
 
             // Seed Users
             modelBuilder.Entity<LocalCommuter>().HasData(

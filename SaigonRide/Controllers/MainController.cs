@@ -14,13 +14,24 @@ namespace SaigonRide.Controllers
         private readonly IPaymentService _paymentService;
         private readonly IEncryptionService _encryptionService;
 
-        public MainController(SaigonRideContext context, IFareCalculationService fareService, IRentalTransactionService transactionService, IPaymentService paymentService, IEncryptionService encryptionService)
+        private readonly ILocalizationService _locService;
+
+        public MainController(SaigonRideContext context, IFareCalculationService fareService, IRentalTransactionService transactionService, IPaymentService paymentService, IEncryptionService encryptionService, ILocalizationService locService)
         {
             _context = context;
             _fareService = fareService;
             _transactionService = transactionService;
             _paymentService = paymentService;
             _encryptionService = encryptionService;
+            _locService = locService;
+        }
+
+        // Language switcher
+        public IActionResult SetLanguage(string lang, string returnUrl)
+        {
+            var culture = (lang?.ToLower() == "vn") ? "vn" : "en";
+            HttpContext.Session.SetString("Lang", culture);
+            return LocalRedirect(returnUrl ?? Url.Action(nameof(Index)));
         }
 
         // Main choice page
@@ -29,20 +40,142 @@ namespace SaigonRide.Controllers
             return View();
         }
 
-        // Show available vehicles
+        // Step 1: Select Station with vehicle type counts
         public async Task<IActionResult> Rent()
         {
+            // Ensure the new stations exist in the database (Dynamic Sync)
+            var existingStations = await _context.Stations.ToListAsync();
+            string[] newStationNames = { 
+                "Ben Thanh Central Hub", "September 23rd Park Station", "Ham Nghi Transit Center", 
+                "Saigon Riverside Station", "Notre Dame Cathedral Stop", "East Gate Terminal", 
+                "West Gate Terminal", "New East City Hub", "An Suong Gateway", "Saigon Railway Station",
+                "University Village Hub", "HCMC Tech Campus Station", "Economy University Stop",
+                "Agriculture Campus Station", "Thao Diep Expat Village", "Phu My Hung Center",
+                "Tan Son Nhat Airport Station", "Chinatown Terminal", "Gia Dinh Park Station",
+                "Dam Sen Theme Park Stop"
+            };
+
+            bool needsUpdate = false;
+            
+            // Apply 50 capacity rule to ALL stations (new and existing)
+            foreach (var station in existingStations)
+            {
+                if (station.MaxCapacity != 50)
+                {
+                    station.MaxCapacity = 50;
+                    _context.Stations.Update(station);
+                    needsUpdate = true;
+                }
+            }
+
+            // Ensure the new stations exist in the database (Dynamic Sync)
+            foreach (var name in newStationNames)
+            {
+                if (!existingStations.Any(s => s.Name == name))
+                {
+                    _context.Stations.Add(new Station { 
+                        Name = name, 
+                        MaxCapacity = 50, 
+                        CurrentCapacity = 0 // Will be updated below
+                    });
+                    needsUpdate = true;
+                }
+            }
+            if (needsUpdate) await _context.SaveChangesAsync();
+
+            var stations = await _context.Stations.ToListAsync();
             var vehicles = await _context.Vehicles.Where(v => v.State == 0).ToListAsync();
-            ViewData["Stations"] = await _context.Stations.ToListAsync();
+
+            // Seed/Re-randomize Vehicles (Dynamic Sync)
+            var random = new Random();
+            foreach (var station in stations)
+            {
+                var stationVehicles = vehicles.Where(v => v.CurrentPos == station.Name).ToList();
+                
+                // If the station is empty OR has high inventory (>= 30 vehicles), re-randomize it to allow Low Stock chance
+                if (!stationVehicles.Any() || stationVehicles.Count >= 30)
+                {
+                    // Clear existing if any (to prevent duplicates when re-randomizing)
+                    if (stationVehicles.Any())
+                    {
+                        _context.Vehicles.RemoveRange(stationVehicles);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    // Randomize counts
+                    int bikeCount, eBikeCount, scooterCount;
+                    
+                    // 20% chance to create a "Low Stock" station (less than 20% capacity/10 vehicles)
+                    if (random.Next(1, 6) == 1) 
+                    {
+                        // Total will be between 3 and 9
+                        bikeCount = random.Next(1, 4); 
+                        eBikeCount = random.Next(1, 4);
+                        scooterCount = random.Next(1, 4);
+                    }
+                    else
+                    {
+                        // Normal range (5 to 15 each)
+                        bikeCount = random.Next(5, 16); 
+                        eBikeCount = random.Next(5, 16);
+                        scooterCount = random.Next(5, 16);
+                    }
+
+                    for (int i = 1; i <= bikeCount; i++)
+                        _context.Vehicles.Add(new Vehicle { Code = $"SB{station.StationId:D2}{i:D2}", Type = "StandardBike", FarePerMin = 500, State = 0, CurrentPos = station.Name });
+                    
+                    for (int i = 1; i <= eBikeCount; i++)
+                        _context.Vehicles.Add(new Vehicle { Code = $"EB{station.StationId:D2}{i:D2}", Type = "EBike", FarePerMin = 1000, State = 0, CurrentPos = station.Name });
+                    
+                    for (int i = 1; i <= scooterCount; i++)
+                        _context.Vehicles.Add(new Vehicle { Code = $"ES{station.StationId:D2}{i:D2}", Type = "Scooter", FarePerMin = 1500, State = 0, CurrentPos = station.Name });
+                    
+                    needsUpdate = true;
+                }
+            }
+            
+            if (needsUpdate)
+            {
+                await _context.SaveChangesAsync();
+                // Final refresh of vehicles and sync capacity
+                vehicles = await _context.Vehicles.Where(v => v.State == 0).ToListAsync();
+                foreach (var s in stations)
+                {
+                    s.CurrentCapacity = vehicles.Count(v => v.CurrentPos == s.Name);
+                    _context.Stations.Update(s);
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            ViewData["AllAvailableVehicles"] = vehicles;
+            return View(stations);
+        }
+
+        // Step 2: Select specific vehicle at the chosen station
+        public async Task<IActionResult> SelectVehicle(int stationId)
+        {
+            var station = await _context.Stations.FindAsync(stationId);
+            if (station == null) return NotFound();
+
+            // Filter vehicles by station name (since CurrentPos stores the station name)
+            var vehicles = await _context.Vehicles
+                .Where(v => v.State == 0 && v.CurrentPos == station.Name)
+                .ToListAsync();
+
+            ViewData["StationName"] = station.Name;
+            ViewData["StationId"] = station.StationId;
             return View(vehicles);
         }
 
-        // Details and input for renting a specific vehicle
-        public async Task<IActionResult> RentDetails(string id)
+        // Step 3: Details and input for renting a specific vehicle
+        public async Task<IActionResult> RentDetails(string id, int? stationId = null)
         {
             var vehicle = await _context.Vehicles.FindAsync(id);
             if (vehicle == null) return NotFound();
+            
+            // For the return station selection in the form
             ViewData["Stations"] = await _context.Stations.ToListAsync();
+            ViewData["SelectedStationId"] = stationId;
             return View(vehicle);
         }
 

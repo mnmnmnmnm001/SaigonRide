@@ -1,43 +1,51 @@
-# 🚲 SaigonRide: Unified Public Transit Management System (HCMC)
+`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`
+# <\\> How to run the project
+1.  Open visual studio
+2.  Clone the repository
+3.  Run ```Program.cs```
+4.  Wait ~33 second (yes, it's long) for initalization
+5.  
+`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`
+# |/|\\| Admin login infromation
+Username: ```qwe```
 
-**SaigonRide** is a comprehensive digital infrastructure solution designed to modernize Ho Chi Minh City’s public bicycle and electric scooter network. The project focuses on bridging the gap between local commuters and international tourists through a unified, scalable platform.
+Password: ```1234560```
 
----
+There is only 1 admin account currently
 
-## 📌 Context & Background
-As Ho Chi Minh City rapidly modernizes its public transit ecosystem to reduce congestion and emissions, **SaigonRide** introduces a distributed network allowing users to unlock a vehicle at **Station A** (e.g., Ben Thanh) and return it to **Station B** (e.g., Thao Dien).
+`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`
 
-This system addresses three primary challenges:
-1.  **Fragmented Payments:** Integrating local e-wallets (MoMo, VNPay) with international gateways (Apple Pay, PayPal).
-2.  **User Verification:** Streamlining registration for local citizens and secure passport verification for foreign tourists.
-3.  **Fleet Imbalance:** Managing inventory to prevent empty or overflowing stations through smart fleet balancing.
+# </> How to 'use' the project
+1.  Normal user will choose between rent or return. Admin will login using login as admin button
 
----
+## Rent -->
+2.1  If user choose rent, user will then choose a vehicle in a new screen
 
-## ✨ Key Features
-*   **Fleet & Inventory Management:** Real-time tracking of vehicle availability and station capacity.
-*   **Dual-User Verification:** Seamless identity verification for local residents and passport-based registration for tourists.
-*   **Multi-Option Payment Architecture:** Support for both domestic digital wallets and global payment methods.
-*   **Dynamic Time-based Pricing:** Automated fare calculation based on duration and vehicle type (Bicycle vs. E-scooter).
+3.1  User will then enter all information (all are necessary) and submit
 
----
+4.1.1  If Invalid information, the screen will show where is the invalid informaton
 
-## 🛠️ Tech Stack
-The application is built with a focus on security, consistency, and a clear separation of concerns:
-*   **Backend:** ASP.NET Core (C#)
-*   **Database:** Microsoft SQL Server
-*   **Frontend:** HTML5, CSS3, JavaScript
-*   **UI Framework:** Bootstrap 5
-*   **Architecture:** MVC (Model-View-Controller)
+4.1.2  If correct information, bank account will sent confirm sent money to user via their bank app in their phone, the system will wait 70 seconds for confirmation (not implemented)
 
----
+5.1.1 If user not confirm within 70 seconds, the system will automatically return to the main screen (not implemented)
 
-## 🎓 Educational Objectives
-This project simulates a real-world software engineering contract, covering the full **Software Development Life Cycle (SDLC)**:
-*   Requirement analysis from abstract client needs (HCMC Transit Authority).
-*   System modeling including Database Structuring and UML design.
-*   UI/UX design tailored for diverse user personas.
-*   Rigorous Quality Assurance (QA) and security testing.
+5.1.2 If user confirm within 70 seconds (not implemented), the system will automatically move to receipt screen and automatically return to the main screen after 7 seconds. The system also sent encryted bank account number and other necessary information to the main database
 
----
-*Developed as a Software Engineering University Project for Ho Chi Minh City's Modern Transit Initiative.*
+## Return <--
+2.2  If user choose return, user will then choose a station in a new screen
+
+3.2  User will then enter all information (all are necessary) and submit
+
+4.2.1  If Invalid information, the screen will show where is the invalid informaton
+
+4.2.2  If correct information, bank account of user that have been kept with vehicle code will be automatically take more/refund depending on how many minutes since showed receipt screen and discount depending on current station capacity/max capacity < 20% (not implemented)
+
+5.2 The system will sutomatically return to the main screen after 7 seconds after success transaction
+
+## Admin >|<
+2.3  If user choose login as admin, the system will show login screen
+
+3.3  User will then enter all information (all are necessary) and submit
+
+4.3  If correct information, the user can now access all admin functionality, user can see revenue report or station report. They can also CRUD: user (transaction), station, vehicle.
+

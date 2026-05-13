@@ -212,9 +212,37 @@ html[data-theme="dark"] .btn-danger:hover {
     background-color: var(--button-hover-bg);
 }
 
+/* Dark theme - Purple background for all table rows */
+html[data-theme="dark"] .table tbody tr {
+    background-color: #5a3f8a;
+    color: #ffffff;
+    border-color: #6a4f9a;
+}
+
+html[data-theme="dark"] .table tbody tr td {
+    color: #ffffff;
+    border-color: #6a4f9a;
+}
+
+html[data-theme="dark"] .table tbody tr:hover {
+    background-color: #7a5fba;
+    color: #ffffff;
+}
+
+/* Dark theme table head styling */
+html[data-theme="dark"] .table thead {
+    background-color: #4a2f7a;
+    color: #ffffff;
+}
+
+html[data-theme="dark"] .table thead th {
+    color: #ffffff;
+    border-color: #5a3f8a;
+}
+
 /* Dark theme table row hover with purple */
 html[data-theme="dark"] .vehicle-table tbody tr:hover {
-    background-color: #6f42c1 !important;
+    background-color: #7a5fba !important;
 }
 
 /* Badge styling */

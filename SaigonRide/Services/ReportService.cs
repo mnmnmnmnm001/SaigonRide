@@ -83,7 +83,8 @@ namespace SaigonRide.Services
             foreach (var s in stations)
             {
                 var utilizationRatio = s.GetRatio();
-                var status = utilizationRatio >= 0.8 ? "High" : (utilizationRatio >= 0.5 ? "Medium" : "Low");
+                // Status: Low inventory when < 20% capacity, Medium when 20-80%, High when > 80%
+                var status = utilizationRatio < 0.2 ? "Low" : (utilizationRatio <= 0.8 ? "Medium" : "High");
 
                 result.Add(new StationInventoryReport
                 {

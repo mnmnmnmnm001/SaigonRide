@@ -68,16 +68,28 @@
 </style>
 
 <script>
-    let secondsLeft = 7;
-    const countdownElement = document.getElementById('countdown');
+    document.addEventListener('DOMContentLoaded', function() {
+        let secondsLeft = 7;
+        const countdownElement = document.getElementById('countdown');
 
-    const countdownInterval = setInterval(function() {
-        secondsLeft--;
-        countdownElement.textContent = secondsLeft;
+        // Update countdown immediately to ensure visibility
+        if (countdownElement) {
+            const countdownInterval = setInterval(function() {
+                secondsLeft--;
+                if (countdownElement) {
+                    countdownElement.textContent = secondsLeft;
+                }
 
-        if (secondsLeft <= 0) {
-            clearInterval(countdownInterval);
-            window.location.href = '/Main/Index';
+                if (secondsLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    window.location.href = '/Main/Index';
+                }
+            }, 1000);
+
+            // Ensure page redirects after 7 seconds even if interval is cleared
+            setTimeout(function() {
+                window.location.href = '/Main/Index';
+            }, 7100);
         }
-    }, 1000);
+    });
 </script>

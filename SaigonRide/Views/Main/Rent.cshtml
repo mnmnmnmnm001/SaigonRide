@@ -71,12 +71,37 @@
     }
 
     html[data-theme="dark"] .vehicle-table tbody tr {
+        background-color: #5a3f8a;
         border-bottom-color: var(--border-color);
+        color: #e0e0e0;
+    }
+
+    html[data-theme="dark"] .vehicle-table tbody tr td {
+        border-color: #6a4f9a;
+    }
+
+    html[data-theme="dark"] .vehicle-table tbody tr td strong {
+        color: #ffffff;
     }
 
     html[data-theme="dark"] .vehicle-table tbody tr:hover {
-        background-color: #6f42c1;
+        background-color: #7a5fba;
         color: white;
+    }
+
+    html[data-theme="dark"] .vehicle-table tbody tr:hover td {
+        color: white;
+        border-color: #8a6fca;
+    }
+
+    html[data-theme="dark"] .vehicle-table tbody tr:hover strong {
+        color: #ffffff;
+    }
+
+    html[data-theme="dark"] .vehicle-table tbody tr:hover .btn-primary {
+        background-color: #ffffff;
+        color: #7a5fba;
+        border-color: #ffffff;
     }
 
     html[data-theme="dark"] .vehicle-table tbody tr:hover strong {

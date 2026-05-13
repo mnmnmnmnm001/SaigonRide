@@ -197,10 +197,24 @@ html[data-theme="dark"] .btn-danger:hover {
     border-color: #bd2130;
 }
 
+/* Ensure readable text on light-colored buttons and badges */
+.btn-warning, .btn-info, .badge.bg-warning, .badge.bg-info {
+    color: #212529 !important;
+}
+
+html[data-theme="dark"] .btn-warning, 
+html[data-theme="dark"] .btn-info,
+html[data-theme="dark"] .badge.bg-warning,
+html[data-theme="dark"] .badge.bg-info {
+    color: #000000 !important;
+    font-weight: 600;
+}
+
 /* Table styling */
 .table {
     color: var(--text-primary);
     border-color: var(--border-color);
+    background-color: transparent;
 }
 
 .table thead {
@@ -212,37 +226,54 @@ html[data-theme="dark"] .btn-danger:hover {
     background-color: var(--button-hover-bg);
 }
 
-/* Dark theme - Purple background for all table rows */
+/* Dark theme table styling */
+html[data-theme="dark"] .table {
+    --bs-table-color: var(--text-primary);
+    --bs-table-bg: var(--card-bg);
+    --bs-table-border-color: var(--border-color);
+    --bs-table-striped-color: var(--text-primary);
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.05);
+    --bs-table-hover-color: var(--text-primary);
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.075);
+    color: var(--text-primary);
+}
+
+/* Dark theme - Purple accent for specific tables like vehicle list if desired, 
+   but ensure it doesn't break readability */
 html[data-theme="dark"] .table tbody tr {
-    background-color: #5a3f8a;
-    color: #ffffff;
-    border-color: #6a4f9a;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
 }
 
 html[data-theme="dark"] .table tbody tr td {
-    color: #ffffff;
-    border-color: #6a4f9a;
+    color: var(--text-primary);
+    border-color: var(--border-color);
 }
 
-html[data-theme="dark"] .table tbody tr:hover {
-    background-color: #7a5fba;
-    color: #ffffff;
+/* Vehicle table specific dark theme styles (Consistent with application theme) */
+html[data-theme="dark"] .vehicle-table tbody tr {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
 }
 
-/* Dark theme table head styling */
-html[data-theme="dark"] .table thead {
-    background-color: #4a2f7a;
-    color: #ffffff;
+html[data-theme="dark"] .vehicle-table tbody tr td {
+    background-color: transparent !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
 }
 
-html[data-theme="dark"] .table thead th {
-    color: #ffffff;
-    border-color: #5a3f8a;
+html[data-theme="dark"] .vehicle-table thead {
+    background-color: var(--navbar-bg) !important;
+    color: var(--text-primary) !important;
 }
 
-/* Dark theme table row hover with purple */
+html[data-theme="dark"] .vehicle-table thead th {
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
 html[data-theme="dark"] .vehicle-table tbody tr:hover {
-    background-color: #7a5fba !important;
+    background-color: var(--button-hover-bg) !important;
 }
 
 /* Badge styling */
@@ -250,11 +281,29 @@ html[data-theme="dark"] .vehicle-table tbody tr:hover {
     transition: all 0.3s ease;
 }
 
+/* Progress bar styling */
+html[data-theme="dark"] .progress {
+    background-color: #3d3d3d;
+}
+
+/* Close button styling */
+html[data-theme="dark"] .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
 /* Footer styling */
 footer {
     background-color: var(--footer-bg);
     color: var(--text-primary);
     border-top-color: var(--border-color);
+}
+
+.footer .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+html[data-theme="dark"] .text-muted {
+    color: var(--text-secondary) !important;
 }
 
 /* Modal styling */

@@ -28,6 +28,7 @@ builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IAdminAuthService, AdminAuthService>();
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 builder.Services.AddScoped<IRentalTransactionService, RentalTransactionService>(); // Added ILogger injection
+builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
 
 var app = builder.Build();
 

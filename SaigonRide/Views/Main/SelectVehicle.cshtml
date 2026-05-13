@@ -1,0 +1,167 @@
+@model List<SaigonRide.Models.Vehicle>
+@inject SaigonRide.Services.ILocalizationService Loc
+@{
+    ViewData["Title"] = "Select Vehicle";
+    var stationName = ViewData["StationName"] as string;
+    var stationId = ViewData["StationId"];
+    var lang = Context.Session.GetString("Lang") ?? "en";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="card-title mb-0"><i class="bi bi-bicycle me-2"></i>@Loc.Get("AvailableVehicles", lang)</h2>
+                        <p class="text-muted mb-0">@(lang == "vn" ? "Trạm" : "Station"): <strong>@Loc.GetStationName(stationName, lang)</strong></p>
+                    </div>
+                    <a asp-action="Rent" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> @Loc.Get("ChangeStation", lang)
+                    </a>
+                </div>
+                <div class="card-body">
+                    <!-- Vehicle Type Filter Menu -->
+                    <div class="d-flex justify-content-center mb-4">
+                        <div class="btn-group p-1 bg-light rounded-pill shadow-sm" role="group" aria-label="Vehicle type filter">
+                            <button type="button" class="btn btn-sm px-4 rounded-pill filter-btn active" data-filter="all">@Loc.Get("All", lang)</button>
+                            <button type="button" class="btn btn-sm px-4 rounded-pill filter-btn" data-filter="StandardBike">@Loc.Get("Bikes", lang)</button>
+                            <button type="button" class="btn btn-sm px-4 rounded-pill filter-btn" data-filter="EBike">@Loc.Get("EBikes", lang)</button>
+                            <button type="button" class="btn btn-sm px-4 rounded-pill filter-btn" data-filter="Scooter">@Loc.Get("Scooters", lang)</button>
+                        </div>
+                    </div>
+
+                    @if (Model == null || !Model.Any())
+                    {
+                        <div class="alert alert-warning text-center py-5">
+                            <i class="bi bi-exclamation-triangle display-4 d-block mb-3"></i>
+                            <h4>@Loc.Get("NoVehicles", lang)</h4>
+                            <p>@(lang == "vn" ? "Tất cả xe tại trạm này đang được sử dụng hoặc bảo trì." : "All vehicles at this station are currently in transit or under maintenance.")</p>
+                            <a asp-action="Rent" class="btn btn-primary mt-3">@Loc.Get("SelectAnother", lang)</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="vehicleGrid">
+                            @foreach (var vehicle in Model)
+                            {
+                                <div class="col vehicle-item" data-type="@vehicle.Type">
+                                    <div class="card h-100 vehicle-card border-0 shadow-sm">
+                                        <div class="card-body text-center">
+                                            <div class="vehicle-icon-wrapper mb-3">
+                                                <img src="/img/@(vehicle.Type == "StandardBike" ? "bike.jpg" : (vehicle.Type == "EBike" ? "e-bike.jpg" : "e-scooter.jpg"))" 
+                                                     alt="@vehicle.Type" class="img-fluid rounded vehicle-img" />
+                                            </div>
+                                            <h4 class="card-title mb-1">@vehicle.Code</h4>
+                                            <p class="badge bg-secondary mb-3">@vehicle.Type</p>
+                                            
+                                            <div class="price-box mb-4 py-2 bg-light rounded">
+                                                <small class="text-muted d-block">@Loc.Get("Rate", lang)</small>
+                                                <span class="h4 mb-0 vehicle-price">@string.Format("{0:N0}", vehicle.FarePerMin)</span>
+                                                <small class="text-muted">@Loc.Get("VndMin", lang)</small>
+                                            </div>
+
+                                            <div class="d-grid">
+                                                <a asp-action="RentDetails" asp-route-id="@vehicle.Code" asp-route-stationId="@stationId" class="btn btn-primary">
+                                                    @(vehicle.Type.Contains("Bike") ? Loc.Get("RentThisBike", lang) : Loc.Get("RentThisScooter", lang))
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .vehicle-card {
+        border-radius: 16px;
+        transition: transform 0.2s ease, opacity 0.3s ease;
+    }
+    .vehicle-card:hover {
+        transform: scale(1.02);
+    }
+    .vehicle-icon-wrapper {
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 12px;
+        background-color: #ffffff;
+    }
+    .vehicle-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 10px;
+        transition: transform 0.3s ease;
+    }
+    .vehicle-card:hover .vehicle-img {
+        transform: scale(1.05);
+    }
+    .price-box {
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .filter-btn {
+        transition: all 0.3s ease;
+        border: none;
+        color: var(--text-secondary);
+    }
+    .filter-btn.active {
+        background-color: var(--bs-primary) !important;
+        color: white !important;
+        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+    }
+    
+    html[data-theme="dark"] .btn-group {
+        background-color: var(--bg-secondary) !important;
+    }
+    html[data-theme="dark"] .filter-btn:not(.active) {
+        color: var(--text-primary);
+    }
+
+    html[data-theme="dark"] .vehicle-card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+    }
+    html[data-theme="dark"] .price-box {
+        background-color: rgba(255,255,255,0.05) !important;
+    }
+    html[data-theme="dark"] .price-box span {
+        color: var(--text-primary) !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const vehicleItems = document.querySelectorAll('.vehicle-item');
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active state
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const filterValue = btn.getAttribute('data-filter');
+                
+                vehicleItems.forEach(item => {
+                    if (filterValue === 'all' || item.getAttribute('data-type') === filterValue) {
+                        item.style.display = 'block';
+                        setTimeout(() => { item.style.opacity = '1'; }, 10);
+                    } else {
+                        item.style.opacity = '0';
+                        setTimeout(() => { item.style.display = 'none'; }, 300);
+                    }
+                });
+            });
+        });
+    });
+</script>

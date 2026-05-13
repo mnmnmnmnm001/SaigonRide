@@ -25,11 +25,19 @@
 
                         <div class="mb-3">
                             <label for="stationId" class="form-label">Start Station <span class="text-danger">*</span></label>
-                            <select name="stationId" id="stationId" class="form-control" required>
+                            <input type="hidden" name="stationId" value="@ViewData["SelectedStationId"]" />
+                            <select id="stationId" class="form-control" disabled>
                                 <option value="">-- Select a Station --</option>
                                 @foreach(var s in stations)
                                 {
-                                    <option value="@s.StationId">@s.Name (@s.CurrentCapacity/@s.MaxCapacity)</option>
+                                    if (ViewData["SelectedStationId"] != null && s.StationId == (int)ViewData["SelectedStationId"])
+                                    {
+                                        <option value="@s.StationId" selected>@s.Name (@s.CurrentCapacity/@s.MaxCapacity)</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@s.StationId">@s.Name (@s.CurrentCapacity/@s.MaxCapacity)</option>
+                                    }
                                 }
                             </select>
                             <div class="invalid-feedback">

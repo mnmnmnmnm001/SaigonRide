@@ -1,5 +1,7 @@
+@inject SaigonRide.Services.ILocalizationService Loc
 @{
     ViewData["Title"] = "Main - SaigonRide";
+    var lang = Context.Session.GetString("Lang") ?? "en";
 }
 
 <div class="position-relative" style="height: 100vh; display: flex; flex-direction: column;">
@@ -9,10 +11,10 @@
             <h1 class="display-3 mb-4">SaigonRide Kiosk</h1>
             <div class="btn-group btn-group-lg">
                 <a class="btn btn-primary btn-lg me-3" asp-action="Rent">
-                    <i class="bi bi-bicycle"></i> Rent Vehicle
+                    <i class="bi bi-bicycle"></i> @(lang == "vn" ? "Thuê Xe" : "Rent Vehicle")
                 </a>
                 <a class="btn btn-secondary btn-lg" asp-action="Return">
-                    <i class="bi bi-arrow-counterclockwise"></i> Return Vehicle
+                    <i class="bi bi-arrow-counterclockwise"></i> @(lang == "vn" ? "Trả Xe" : "Return Vehicle")
                 </a>
             </div>
         </div>

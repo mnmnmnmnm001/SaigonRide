@@ -43,7 +43,7 @@
                                 <option value="">@Loc.Get("Select Vehicle In Transit", lang)</option>
                                 @foreach(var v in vehicles)
                                 {
-                                    <option value="@v.Code">@v.Code - @Loc.Get(v.Type ?? "", lang) (@Loc.Get("In Transit", lang))</option>
+                                    <option value="@v.Code" data-type="@v.Type">@v.Code - @Loc.Get(v.Type ?? "", lang) (@Loc.Get("InTransit", lang))</option>
                                 }
                             </select>
                             <div class="invalid-feedback">
@@ -78,7 +78,7 @@
                         <div class="mb-3">
                             <label for="paymentMethod" class="form-label">@Loc.Get("PaymentMethod", lang) <span class="text-danger">*</span></label>
                             <select id="paymentMethod" name="paymentMethod" class="form-control" required>
-                                <option value="" selected disabled>@Loc.Get("SelectPaymentMethod", lang)</option>
+                                <option value="" selected disabled>@Loc.Get("Select Payment Method", lang)</option>
                             </select>
                             <div class="invalid-feedback">
                                 Please select a payment method.
@@ -87,14 +87,13 @@
 
                         <div id="qrCodeContainer" class="mb-3 text-center" style="display: none;">
                             <div class="p-3 border rounded bg-light d-inline-block">
-                                <i class="bi bi-qr-code text-dark" style="font-size: 5rem;"></i>
-                                <p class="mt-2 mb-0 text-muted">Scan QR code to pay</p>
-                                <small class="text-muted">(To be implemented)</small>
+                                <img id="qrCodeImage" src="" alt="VietQR" class="img-fluid" style="max-height: 350px;" />
+                                <p class="mt-2 mb-0 text-muted fw-bold">@Loc.Get("ScanQRPay", lang) <span id="qrAmountDisplay" class="text-primary"></span> VND</p>
                             </div>
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button class="btn btn-primary" type="submit" id="submitBtn">@Loc.Get("ReturnVehicle", lang)</button>
+                            <button class="btn btn-primary" type="submit" id="submitBtn">@Loc.Get("Return Vehicle", lang)</button>
                             <a asp-action="Index" asp-controller="Main" class="btn btn-secondary">@Loc.Get("Back", lang)</a>
                         </div>
                     </form>
@@ -143,10 +142,58 @@
         const qrContainer = document.getElementById('qrCodeContainer');
         if (this.value && this.value !== 'Cash') {
             qrContainer.style.display = 'block';
+            updateQrCode();
         } else {
             qrContainer.style.display = 'none';
         }
     });
+
+    function updateQrCode() {
+        const selectedVehicle = vehicleSelect.value;
+        const selectedStation = stationSelect.value;
+        const paymentMethod = paymentMethodSelect.value;
+        
+        if (!selectedVehicle || !paymentMethod || paymentMethod === 'Cash' || !startTimes[selectedVehicle]) {
+            return;
+        }
+
+        // Calculate fare
+        const vehicleOption = vehicleSelect.options[vehicleSelect.selectedIndex];
+        const vType = vehicleOption.getAttribute('data-type');
+        let rate = 500;
+        if (vType === 'EBike') rate = 1000;
+        else if (vType === 'Scooter') rate = 1500;
+
+        const startTime = new Date(startTimes[selectedVehicle]);
+        const now = new Date();
+        const diffMs = now - startTime;
+        let diffMins = Math.ceil(diffMs / 60000);
+        if (diffMins < 1) diffMins = 1;
+
+        let fare = diffMins * rate;
+
+        // Apply discount if low inventory return station
+        if (selectedStation) {
+            const stationOption = stationSelect.options[stationSelect.selectedIndex];
+            const currentCapacity = parseInt(stationOption.getAttribute('data-capacity'));
+            const maxCapacity = parseInt(stationOption.getAttribute('data-max-capacity'));
+            if (maxCapacity > 0 && (currentCapacity / maxCapacity) < 0.20) {
+                fare = fare * 0.85; // 15% discount
+            }
+        }
+
+        const qrAmountDisplay = document.getElementById('qrAmountDisplay');
+        qrAmountDisplay.innerText = Math.round(fare).toLocaleString();
+
+        const accountName = encodeURIComponent("Tran Hoang Khai");
+        const addInfo = encodeURIComponent("SaigonRide " + selectedVehicle);
+        const qrUrl = `https://img.vietqr.io/image/970423-00001756255-compact2.png?amount=${Math.round(fare)}&addInfo=${addInfo}&accountName=${accountName}`;
+        
+        const qrImage = document.getElementById('qrCodeImage');
+        if (qrImage.src !== qrUrl) {
+            qrImage.src = qrUrl;
+        }
+    }
 
     function updateTimeUsed() {
         const selectedVehicle = vehicleSelect.value;
@@ -176,7 +223,11 @@
             };
             
             renderTime();
-            timeInterval = setInterval(renderTime, 1000);
+            updateQrCode();
+            timeInterval = setInterval(() => {
+                renderTime();
+                updateQrCode();
+            }, 1000);
         } else {
             container.style.display = 'none';
             if (timeInterval) clearInterval(timeInterval);
@@ -227,6 +278,7 @@
 
     stationSelect.addEventListener('change', function() {
         this.classList.remove('is-invalid');
+        updateQrCode();
     });
 
     // Helper function to show alerts

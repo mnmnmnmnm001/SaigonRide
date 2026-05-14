@@ -134,7 +134,8 @@ namespace SaigonRide.Services
                 ["Cash"] = "Cash",
                 ["SelectUserType"] = "-- Select User Type --",
                 ["SelectPaymentMethod"] = "-- Select Payment Method --",
-                ["TimeUsed"] = "Time Used"
+                ["TimeUsed"] = "Time Used",
+                ["ScanQRPay"] = "Scan QR code to pay"
             },
             ["vn"] = new()
             {
@@ -337,7 +338,8 @@ namespace SaigonRide.Services
                 ["Cash"] = "Tiền Mặt",
                 ["SelectUserType"] = "-- Chọn Loại Người Dùng --",
                 ["SelectPaymentMethod"] = "-- Chọn Phương Thức Thanh Toán --",
-                ["TimeUsed"] = "Thời Gian Đã Thuê"
+                ["TimeUsed"] = "Thời Gian Đã Thuê",
+                ["ScanQRPay"] = "Quét mã QR để thanh toán"
             }
         };
 

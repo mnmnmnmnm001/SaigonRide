@@ -181,7 +181,7 @@ namespace SaigonRide.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ProcessRent(string vehicleId, int stationId, string userType, string bankNum, string passport, int minutes, string paymentMethod)
+        public async Task<IActionResult> ProcessRent(string vehicleId, int stationId, string userType, string passport)
         {
             // Input validation
             if (string.IsNullOrWhiteSpace(vehicleId))
@@ -196,12 +196,6 @@ namespace SaigonRide.Controllers
                 return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
             }
 
-            if (string.IsNullOrWhiteSpace(bankNum))
-            {
-                TempData["Error"] = "Bank number is required.";
-                return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
-            }
-
             if (string.IsNullOrWhiteSpace(userType) || (userType != "LocalCommuter" && userType != "ForeignTourist"))
             {
                 TempData["Error"] = "Please select a valid user type.";
@@ -211,18 +205,6 @@ namespace SaigonRide.Controllers
             if (userType == "ForeignTourist" && string.IsNullOrWhiteSpace(passport))
             {
                 TempData["Error"] = "Passport number is required for foreign tourists.";
-                return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
-            }
-
-            if (string.IsNullOrWhiteSpace(paymentMethod))
-            {
-                TempData["Error"] = "Please select a payment method.";
-                return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
-            }
-
-            if (minutes <= 0 || minutes > 1440)
-            {
-                TempData["Error"] = "Rental duration must be between 1 and 1440 minutes (24 hours).";
                 return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
             }
 
@@ -246,37 +228,8 @@ namespace SaigonRide.Controllers
                 return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
             }
 
-            double moneyRented = _fareService.CalculateFare(vehicle, minutes, false);
-
-            // Create or find user
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.BankNum == bankNum);
-            if (user == null)
-            {
-                if (userType == "LocalCommuter")
-                {
-                    user = new LocalCommuter { BankNum = bankNum, ChosenPaymentCode = "Cash", Payed = 0, P_MoMo = false, P_VNPay = false };
-                }
-                else
-                {
-                    user = new ForeignTourist { BankNum = bankNum, ChosenPaymentCode = "Cash", Payed = 0, Passport = passport ?? "", P_ApplePay = false, P_PayPal = false };
-                }
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-            }
-
-            // Charge user from their account balance.
-            /* here, we havw no api to connect to bank, so we will just skip
-             * get userbankbalance (authorize bank to connect api and get their userbankbalance)
-            if (userbankbalance < moneyRented)
-            {
-                TempData["Error"] = "Insufficient funds in user account.";
-                return RedirectToAction(nameof(RentDetails), new { id = vehicleId });
-            }*/
-            user.Payed = moneyRented;
-            _context.Users.Update(user);
-
-            // Create transaction
-            bool created = await _transactionService.CreateRentalTransactionAsync(bankNum, vehicle.Code, minutes, moneyRented, user.UserType, passport, stationId);
+            // Create transaction (no bankNum, no money paid upfront)
+            bool created = await _transactionService.CreateRentalTransactionAsync("Anonymous", vehicle.Code, 0, 0, userType, passport, stationId);
             if (!created)
             {
                 TempData["Error"] = "Failed to create rental transaction.";
@@ -293,8 +246,8 @@ namespace SaigonRide.Controllers
             await _context.SaveChangesAsync();
 
             ViewData["VehicleCode"] = vehicle.Code;
-            ViewData["Minutes"] = minutes;
-            ViewData["MoneyRented"] = moneyRented;
+            ViewData["Minutes"] = 0;
+            ViewData["MoneyRented"] = 0;
             return View("RentResult");
         }
 
@@ -306,23 +259,27 @@ namespace SaigonRide.Controllers
             ViewBag.Vehicles = vehicles;
 
             var startTimes = new Dictionary<string, string>();
+            var userTypes = new Dictionary<string, string>();
             foreach (var v in vehicles)
             {
                 var transaction = await _transactionService.GetRentalTransactionByVehicleCodeAsync(v.Code);
                 if (transaction != null)
                 {
                     startTimes[v.Code] = transaction.RentalStartTime.ToString("o");
+                    userTypes[v.Code] = transaction.UserType ?? "LocalCommuter";
                 }
             }
             ViewBag.StartTimes = startTimes;
+            ViewBag.UserTypes = userTypes;
 
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ProcessReturn(string vehicleCode, int returnStationId)
+        public async Task<IActionResult> ProcessReturn(string vehicleCode, int returnStationId, string paymentMethod)
         {
+            string bankNum = "ANON_" + Guid.NewGuid().ToString("N").Substring(0, 8);
             // Input validation
             if (string.IsNullOrWhiteSpace(vehicleCode))
             {
@@ -333,6 +290,13 @@ namespace SaigonRide.Controllers
             if (returnStationId <= 0)
             {
                 TempData["Error"] = "Please select a valid return station.";
+                return RedirectToAction(nameof(Return));
+            }
+
+
+            if (string.IsNullOrWhiteSpace(paymentMethod))
+            {
+                TempData["Error"] = "Please select a payment method.";
                 return RedirectToAction(nameof(Return));
             }
 
@@ -369,9 +333,47 @@ namespace SaigonRide.Controllers
                 return RedirectToAction(nameof(Return));
             }
 
+            int minutes = (int)Math.Ceiling((DateTime.Now - transaction.RentalStartTime).TotalMinutes);
+            if (minutes < 1) minutes = 1;
+            
+            double moneyRented = _fareService.CalculateFare(vehicle, minutes, false);
+
             bool isLowInventory = _fareService.IsLowInventory(returnStation);
-            double finalFare = _fareService.ApplyDiscount(transaction.MoneyRented, isLowInventory);
-            double difference = finalFare - transaction.MoneyRented;
+            double finalFare = _fareService.ApplyDiscount(moneyRented, isLowInventory);
+
+            // Update transaction with actual values (user info)
+            transaction.EncryptedBankNumber = _encryptionService.Encrypt(bankNum);
+            transaction.MinutesBorrowed = minutes;
+            transaction.MoneyRented = moneyRented;
+            _context.RentalTransactions.Update(transaction);
+
+            // Fetch stored passport from transaction if foreign
+            string storedPassport = "";
+            if (transaction.UserType == "ForeignTourist" && !string.IsNullOrEmpty(transaction.EncryptedPassport))
+            {
+                storedPassport = _encryptionService.Decrypt(transaction.EncryptedPassport);
+            }
+
+            // Create or find user
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.BankNum == bankNum);
+            if (user == null)
+            {
+                if (transaction.UserType == "LocalCommuter")
+                {
+                    user = new LocalCommuter { BankNum = bankNum, ChosenPaymentCode = paymentMethod, Payed = finalFare, P_MoMo = paymentMethod == "MoMo", P_VNPay = paymentMethod == "VNPay" };
+                }
+                else
+                {
+                    user = new ForeignTourist { BankNum = bankNum, ChosenPaymentCode = paymentMethod, Payed = finalFare, Passport = storedPassport ?? "", P_ApplePay = paymentMethod == "ApplePay", P_PayPal = paymentMethod == "PayPal" };
+                }
+                _context.Users.Add(user);
+            }
+            else
+            {
+                user.Payed += finalFare;
+                user.ChosenPaymentCode = paymentMethod;
+                _context.Users.Update(user);
+            }
 
             // Update vehicle and station
             if (vehicle != null)
@@ -384,14 +386,14 @@ namespace SaigonRide.Controllers
             returnStation.CurrentCapacity = Math.Min(returnStation.CurrentCapacity + 1, returnStation.MaxCapacity);
             _context.Stations.Update(returnStation);
 
-            // Complete transaction (remove transaction record)
-            await transaction_complete(transaction, returnStationId, difference);
 
-            await _context.SaveChangesAsync();
+            // Complete transaction (remove transaction record)
+            await _context.SaveChangesAsync(); // save user update first
+            await transaction_complete(transaction, returnStationId, finalFare - moneyRented);
 
             ViewData["FinalFare"] = finalFare;
-            ViewData["MoneyRented"] = transaction.MoneyRented;
-            ViewData["Difference"] = difference;
+            ViewData["MoneyRented"] = moneyRented;
+            ViewData["Difference"] = finalFare - moneyRented;
             ViewData["VehicleCode"] = vehicleCode;
             return View("ReturnResult");
         }

@@ -52,38 +52,11 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="bankNum" class="form-label">@Loc.Get("BankNumber", lang) <span class="text-danger">*</span></label>
-                            <input type="text" name="bankNum" id="bankNum" class="form-control" required />
-                            <div class="invalid-feedback">
-                                Bank number is required.
-                            </div>
-                        </div>
-
                         <div class="mb-3" id="passportField" style="display: none;">
                             <label for="passport" class="form-label">@Loc.Get("Passport", lang) <span class="text-danger">*</span></label>
                             <input type="text" name="passport" id="passport" class="form-control" />
                             <div class="invalid-feedback">
-                                Passport number is required.
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="minutes" class="form-label">@Loc.Get("RentalDuration", lang) <span class="text-danger">*</span></label>
-                            <input type="number" name="minutes" id="minutes" class="form-control" value="30" min="1" max="1440" required />
-                            <small class="form-text text-muted">Between 1 and 1440 minutes (24 hours)</small>
-                            <div class="invalid-feedback">
-                                Rental duration must be between 1 and 1440 minutes.
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="paymentMethod" class="form-label">@Loc.Get("PaymentMethod", lang) <span class="text-danger">*</span></label>
-                            <select id="paymentMethod" name="paymentMethod" class="form-control" required>
-                                <option value="" selected disabled>@Loc.Get("SelectPaymentMethod", lang)</option>
-                            </select>
-                            <div class="invalid-feedback">
-                                Please select a payment method.
+                                Passport number is required for foreign tourists.
                             </div>
                         </div>
 
@@ -99,37 +72,22 @@
 </div>
 
 <script>
-    // Form validation
     const form = document.getElementById('rentForm');
     const userTypeSelect = document.getElementById('userType');
-    const paymentMethodSelect = document.getElementById('paymentMethod');
     const passportField = document.getElementById('passportField');
     const passportInput = document.getElementById('passport');
 
-    // Handle user type change
-    function updatePaymentMethods() {
-        const userType = userTypeSelect.value;
-        const textSelectPayment = '@Loc.Get("SelectPaymentMethod", lang)';
-        const textCash = '@Loc.Get("Cash", lang)';
-
-        paymentMethodSelect.innerHTML = '<option value="" disabled>' + textSelectPayment + '</option>';
-
-        if (userType === 'LocalCommuter') {
-            passportField.style.display = 'none';
-            passportInput.removeAttribute('required');
-            paymentMethodSelect.innerHTML += '<option value="Cash">' + textCash + '</option>';
-            paymentMethodSelect.innerHTML += '<option value="MoMo">MoMo</option>';
-            paymentMethodSelect.innerHTML += '<option value="VNPay">VNPay</option>';
-        } else if (userType === 'ForeignTourist') {
+    function togglePassport() {
+        if (userTypeSelect.value === 'ForeignTourist') {
             passportField.style.display = 'block';
             passportInput.setAttribute('required', 'required');
-            paymentMethodSelect.innerHTML += '<option value="Cash">' + textCash + '</option>';
-            paymentMethodSelect.innerHTML += '<option value="ApplePay">Apple Pay</option>';
-            paymentMethodSelect.innerHTML += '<option value="PayPal">PayPal</option>';
+        } else {
+            passportField.style.display = 'none';
+            passportInput.removeAttribute('required');
         }
     }
 
-    userTypeSelect.addEventListener('change', updatePaymentMethods);
+    userTypeSelect.addEventListener('change', togglePassport);
 
     // Form submit validation
     form.addEventListener('submit', function(event) {
@@ -140,17 +98,5 @@
         form.classList.add('was-validated');
     }, false);
 
-    // Validate minutes input
-    const minutesInput = document.getElementById('minutes');
-    minutesInput.addEventListener('change', function() {
-        const value = parseInt(this.value);
-        if (isNaN(value) || value < 1 || value > 1440) {
-            this.classList.add('is-invalid');
-        } else {
-            this.classList.remove('is-invalid');
-        }
-    });
-
-    // Initialize on page load
-    updatePaymentMethods();
+    togglePassport();
 </script>

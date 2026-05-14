@@ -40,28 +40,28 @@
                         <div class="mb-3">
                             <label for="vehicleCode" class="form-label">@Loc.Get("VehicleCode", lang) <span class="text-danger">*</span></label>
                             <select name="vehicleCode" id="vehicleCode" class="form-control" required>
-                                <option value="">@Loc.Get("SelectVehicleInTransit", lang)</option>
+                                <option value="">@Loc.Get("Select Vehicle In Transit", lang)</option>
                                 @foreach(var v in vehicles)
                                 {
-                                    <option value="@v.Code">@v.Code - @Loc.Get(v.Type ?? "", lang) (@Loc.Get("InTransit", lang))</option>
+                                    <option value="@v.Code">@v.Code - @Loc.Get(v.Type ?? "", lang) (@Loc.Get("In Transit", lang))</option>
                                 }
                             </select>
                             <div class="invalid-feedback">
-                                @Loc.Get("PleaseSelectVehicle", lang)
+                                @Loc.Get("Please Select Vehicle", lang)
                             </div>
                             <div id="timeUsedContainer" style="display:none;" class="mt-2 text-info fw-bold">
-                                <strong>@Loc.Get("TimeUsed", lang):</strong> <span id="timeUsedDisplay"></span>
+                                <strong>@Loc.Get("Time Used", lang):</strong> <span id="timeUsedDisplay"></span>
                             </div>
                             @if (vehicles.Count == 0)
                             {
-                                <small class="form-text text-muted d-block mt-2">@Loc.Get("NoVehiclesInTransit", lang)</small>
+                                <small class="form-text text-muted d-block mt-2">@Loc.Get("No Vehicles In Transit", lang)</small>
                             }
                         </div>
 
                         <div class="mb-3">
-                            <label for="returnStationId" class="form-label">@Loc.Get("ReturnStation", lang) <span class="text-danger">*</span></label>
+                            <label for="returnStationId" class="form-label">@Loc.Get("Return Station", lang) <span class="text-danger">*</span></label>
                             <select name="returnStationId" id="returnStationId" class="form-control" required>
-                                <option value="">@Loc.Get("SelectReturnStation", lang)</option>
+                                <option value="">@Loc.Get("Select Return Station", lang)</option>
                                 @foreach(var s in stations)
                                 {
                                     var capacityPercent = (s.CurrentCapacity * 100) / (s.MaxCapacity > 0 ? s.MaxCapacity : 1);
@@ -71,7 +71,25 @@
                                 }
                             </select>
                             <div class="invalid-feedback">
-                                @Loc.Get("PleaseSelectReturnStation", lang)
+                                @Loc.Get("Please Select Return Station", lang)
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="paymentMethod" class="form-label">@Loc.Get("PaymentMethod", lang) <span class="text-danger">*</span></label>
+                            <select id="paymentMethod" name="paymentMethod" class="form-control" required>
+                                <option value="" selected disabled>@Loc.Get("SelectPaymentMethod", lang)</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a payment method.
+                            </div>
+                        </div>
+
+                        <div id="qrCodeContainer" class="mb-3 text-center" style="display: none;">
+                            <div class="p-3 border rounded bg-light d-inline-block">
+                                <i class="bi bi-qr-code text-dark" style="font-size: 5rem;"></i>
+                                <p class="mt-2 mb-0 text-muted">Scan QR code to pay</p>
+                                <small class="text-muted">(To be implemented)</small>
                             </div>
                         </div>
 
@@ -91,44 +109,44 @@
     const vehicleSelect = document.getElementById('vehicleCode');
     const stationSelect = document.getElementById('returnStationId');
     const submitBtn = document.getElementById('submitBtn');
-
-    // Form submit validation
-    form.addEventListener('submit', function(event) {
-        // Check if selections are made
-        if (!vehicleSelect.value) {
-            event.preventDefault();
-            event.stopPropagation();
-            vehicleSelect.classList.add('is-invalid');
-            showAlert('@Loc.Get("PleaseSelectVehicle", lang)', 'danger');
-            return false;
-        }
-
-        if (!stationSelect.value) {
-            event.preventDefault();
-            event.stopPropagation();
-            stationSelect.classList.add('is-invalid');
-            showAlert('@Loc.Get("PleaseSelectReturnStation", lang)', 'danger');
-            return false;
-        }
-
-        // Check if station has capacity
-        const selectedOption = stationSelect.options[stationSelect.selectedIndex];
-        const currentCapacity = parseInt(selectedOption.getAttribute('data-capacity'));
-        const maxCapacity = parseInt(selectedOption.getAttribute('data-max-capacity'));
-
-        if (currentCapacity >= maxCapacity) {
-            event.preventDefault();
-            event.stopPropagation();
-            stationSelect.classList.add('is-invalid');
-            showAlert('@Loc.Get("StationFullCapacity", lang)', 'danger');
-            return false;
-        }
-
-        form.classList.add('was-validated');
-    }, false);
+    const paymentMethodSelect = document.getElementById('paymentMethod');
 
     const startTimes = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.StartTimes ?? new Dictionary<string, string>()));
+    const userTypes = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.UserTypes ?? new Dictionary<string, string>()));
     let timeInterval;
+
+    function updatePaymentMethods() {
+        const selectedVehicle = vehicleSelect.value;
+        const textSelectPayment = '@Loc.Get("SelectPaymentMethod", lang)';
+        const textCash = '@Loc.Get("Cash", lang)';
+        
+        paymentMethodSelect.innerHTML = '<option value="" disabled selected>' + textSelectPayment + '</option>';
+        document.getElementById('qrCodeContainer').style.display = 'none';
+        
+        if (selectedVehicle && userTypes[selectedVehicle]) {
+            let uType = userTypes[selectedVehicle];
+            if (uType !== 'ForeignTourist') uType = 'LocalCommuter'; // Default for old rentals
+
+            if (uType === 'LocalCommuter') {
+                paymentMethodSelect.innerHTML += '<option value="Cash">' + textCash + '</option>';
+                paymentMethodSelect.innerHTML += '<option value="MoMo">MoMo</option>';
+                paymentMethodSelect.innerHTML += '<option value="VNPay">VNPay</option>';
+            } else if (uType === 'ForeignTourist') {
+                paymentMethodSelect.innerHTML += '<option value="Cash">' + textCash + '</option>';
+                paymentMethodSelect.innerHTML += '<option value="ApplePay">Apple Pay</option>';
+                paymentMethodSelect.innerHTML += '<option value="PayPal">PayPal</option>';
+            }
+        }
+    }
+
+    paymentMethodSelect.addEventListener('change', function() {
+        const qrContainer = document.getElementById('qrCodeContainer');
+        if (this.value && this.value !== 'Cash') {
+            qrContainer.style.display = 'block';
+        } else {
+            qrContainer.style.display = 'none';
+        }
+    });
 
     function updateTimeUsed() {
         const selectedVehicle = vehicleSelect.value;
@@ -168,7 +186,44 @@
     vehicleSelect.addEventListener('change', function() {
         this.classList.remove('is-invalid');
         updateTimeUsed();
+        updatePaymentMethods();
     });
+
+    // Form submit validation
+    form.addEventListener('submit', function(event) {
+        // Check if selections are made
+        if (!vehicleSelect.value) {
+            event.preventDefault();
+            event.stopPropagation();
+            vehicleSelect.classList.add('is-invalid');
+            showAlert('@Loc.Get("PleaseSelectVehicle", lang)', 'danger');
+            return false;
+        }
+
+        if (!stationSelect.value) {
+            event.preventDefault();
+            event.stopPropagation();
+            stationSelect.classList.add('is-invalid');
+            showAlert('@Loc.Get("PleaseSelectReturnStation", lang)', 'danger');
+            return false;
+        }
+
+        // Check if station has capacity
+        const selectedOption = stationSelect.options[stationSelect.selectedIndex];
+        const currentCapacity = parseInt(selectedOption.getAttribute('data-capacity'));
+        const maxCapacity = parseInt(selectedOption.getAttribute('data-max-capacity'));
+
+        if (currentCapacity >= maxCapacity) {
+            event.preventDefault();
+            event.stopPropagation();
+            stationSelect.classList.add('is-invalid');
+            showAlert('@Loc.Get("StationFullCapacity", lang)', 'danger');
+            return false;
+        }
+
+        form.classList.add('was-validated');
+    }, false);
+
 
     stationSelect.addEventListener('change', function() {
         this.classList.remove('is-invalid');

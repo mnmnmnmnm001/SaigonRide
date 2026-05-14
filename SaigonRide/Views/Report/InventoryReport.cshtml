@@ -6,7 +6,7 @@
     var lang = Context.Session.GetString("Lang") ?? "en";
 }
 
-<h1>@Loc.Get("StationInventoryUtilizationReport", lang)</h1>
+<h1>@Loc.Get("Station Inventory Utilization Report", lang)</h1>
 
 @if (Model != null && Model.Any())
 {
@@ -23,17 +23,17 @@
                             <dt class="col-sm-4">@Loc.Get("ID", lang)</dt>
                             <dd class="col-sm-8">@station.StationId</dd>
 
-                            <dt class="col-sm-4">@Loc.Get("CurrentMaxCapacity", lang)</dt>
+                            <dt class="col-sm-4">@Loc.Get("Current Max Capacity", lang)</dt>
                             <dd class="col-sm-8">@station.CurrentCapacity / @station.MaxCapacity</dd>
 
-                            <dt class="col-sm-4">@Loc.Get("UtilizationRatio", lang)</dt>
+                            <dt class="col-sm-4">@Loc.Get("Utilization Ratio", lang)</dt>
                             <dd class="col-sm-8">@string.Format("{0:P2}", station.UtilizationRatio)</dd>
 
                             <dt class="col-sm-4">@Loc.Get("Status", lang)</dt>
                             <dd class="col-sm-8">
                                 @if (station.Status == "Low")
                                 {
-                                    <span class="badge bg-danger" style="font-size: 1rem;">@Loc.Get("LowInventory", lang)</span>
+                                    <span class="badge bg-danger" style="font-size: 1rem;">@Loc.Get("Low Inventory", lang)</span>
                                 }
                                 else if (station.Status == "Medium")
                                 {
@@ -47,7 +47,7 @@
                         </dl>
 
                         <div class="mt-3">
-                            <h6>@Loc.Get("CapacityVisualization", lang)</h6>
+                            <h6>@Loc.Get("Capacity Visualization", lang)</h6>
                             <div class="progress" style="height: 30px;">
                                 <div class="progress-bar" role="progressbar" style="width: @string.Format("{0:P0}", station.UtilizationRatio)" aria-valuenow="@station.CurrentCapacity" aria-valuemin="0" aria-valuemax="@station.MaxCapacity">
                                     @string.Format("{0:P0}", station.UtilizationRatio)
@@ -58,7 +58,7 @@
                         @if (station.Status == "Low")
                         {
                             <div class="alert alert-warning mt-3">
-                                @Loc.Get("LowInventoryWarning", lang)
+                                @Loc.Get("Low Inventory Warning", lang)
                             </div>
                         }
                     </div>

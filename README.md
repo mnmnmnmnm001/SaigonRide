@@ -3,8 +3,8 @@
 1.  Open visual studio
 2.  Clone the repository
 3.  Run ```Program.cs```
-4.  Wait ~33 second (yes, it's long) for initalization
-5.  
+4.  Wait ~33 second (yes, it's long if your computer is weak) for initalization
+	
 `-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`
 # |/|\\| Admin login infromation
 Username: ```qwe```
@@ -19,17 +19,19 @@ There is only 1 admin account currently
 1.  Normal user will choose between rent or return. Admin will login using login as admin button
 
 ## Rent -->
-2.1  If user choose rent, user will then choose a vehicle in a new screen
+2.1  If user choose rent, user will then choose a the station to rent in a new screen
 
-3.1  User will then enter all information (all are necessary) and submit
+3.1  Then, user will then choose a vehicle in a new screen
 
-4.1.1  If Invalid information, the screen will show where is the invalid informaton
+4.1  User will then enter all information (all are necessary) and submit
 
-4.1.2  If correct information, bank account will sent confirm sent money to user via their bank app in their phone, the system will wait 70 seconds for confirmation (not implemented)
+5.1.1  If Invalid information, the screen will show where is the invalid informaton
 
-5.1.1 If user not confirm within 70 seconds, the system will automatically return to the main screen (not implemented)
+5.1.2  If correct information, bank account will sent confirm sent money to user via their bank app in their phone, the system will wait 70 seconds for confirmation (not implemented)
 
-5.1.2 If user confirm within 70 seconds (not implemented), the system will automatically move to receipt screen and automatically return to the main screen after 7 seconds. The system also sent encryted bank account number and other necessary information to the main database
+6.1.1 If user not confirm within 70 seconds, the system will automatically return to the main screen (not implemented)
+
+6.1.2 If user confirm within 70 seconds (not implemented), the system will automatically move to receipt screen and automatically return to the main screen after 7 seconds. The system also sent encryted bank account number and other necessary information to the main database
 
 ## Return <--
 2.2  If user choose return, user will then choose a station in a new screen
@@ -48,4 +50,3 @@ There is only 1 admin account currently
 3.3  User will then enter all information (all are necessary) and submit
 
 4.3  If correct information, the user can now access all admin functionality, user can see revenue report or station report. They can also CRUD: user (transaction), station, vehicle.
-

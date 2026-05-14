@@ -27,11 +27,7 @@ There is only 1 admin account currently
 
 5.1.1  If Invalid information, the screen will show where is the invalid informaton
 
-5.1.2  If correct information, bank account will sent confirm sent money to user via their bank app in their phone, the system will wait 70 seconds for confirmation (not implemented)
-
-6.1.1 If user not confirm within 70 seconds, the system will automatically return to the main screen (not implemented)
-
-6.1.2 If user confirm within 70 seconds (not implemented), the system will automatically move to receipt screen and automatically return to the main screen after 7 seconds. The system also sent encryted bank account number and other necessary information to the main database
+5.1.2  If correct information, the system will automatically move to receipt screen and automatically return to the main screen after 7 seconds. The system also sent necessary information to the main database
 
 ## Return <--
 2.2  If user choose return, user will then choose a station in a new screen
@@ -40,7 +36,7 @@ There is only 1 admin account currently
 
 4.2.1  If Invalid information, the screen will show where is the invalid informaton
 
-4.2.2  If correct information, bank account of user that have been kept with vehicle code will be automatically take more/refund depending on how many minutes since showed receipt screen and discount depending on current station capacity/max capacity < 20% (not implemented)
+4.2.2  If correct information, bank account of user that have been kept with vehicle code will be automatically deduct user money depending on how many minutes since showed receipt screen and discount depending on current station capacity/max capacity < 20% (not implemented for API bank)
 
 5.2 The system will sutomatically return to the main screen after 7 seconds after success transaction
 

@@ -1,24 +1,26 @@
 @model List<SaigonRide.Models.Vehicle>
+@inject SaigonRide.Services.ILocalizationService Loc
 
 @{
     ViewData["Title"] = "Vehicle Management";
+    var lang = Context.Session.GetString("Lang") ?? "en";
 }
 
-<h1>Vehicle Management</h1>
+<h1>@Loc.Get("VehicleManagement", lang)</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Add New Vehicle</a>
+    <a asp-action="Create" class="btn btn-primary">@Loc.Get("AddNewVehicle", lang)</a>
 </p>
 
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Code</th>
-            <th>Type</th>
-            <th>Fare/Min</th>
-            <th>Current Position</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>@Loc.Get("Code", lang)</th>
+            <th>@Loc.Get("Type", lang)</th>
+            <th>@Loc.Get("FarePerMin", lang)</th>
+            <th>@Loc.Get("CurrentPosition", lang)</th>
+            <th>@Loc.Get("Status", lang)</th>
+            <th>@Loc.Get("Actions", lang)</th>
         </tr>
     </thead>
     <tbody>
@@ -26,27 +28,27 @@
         {
             <tr>
                 <td>@item.Code</td>
-                <td>@item.Type</td>
+                <td>@Loc.Get(item.Type ?? "", lang)</td>
                 <td>@string.Format("{0:N0}", item.FarePerMin) VND</td>
-                <td>@item.CurrentPos</td>
+                <td>@Loc.GetStationName(item.CurrentPos ?? "", lang)</td>
                 <td>
                     @if (item.State == 0)
                     {
-                        <span class="badge bg-success">Available</span>
+                        <span class="badge bg-success">@Loc.Get("Available", lang)</span>
                     }
                     else if (item.State == 1)
                     {
-                        <span class="badge bg-warning">In Transit</span>
+                        <span class="badge bg-warning">@Loc.Get("InTransit", lang)</span>
                     }
                     else
                     {
-                        <span class="badge bg-danger">Maintenance</span>
+                        <span class="badge bg-danger">@Loc.Get("Maintenance", lang)</span>
                     }
                 </td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.Code" class="btn btn-sm btn-info">View</a>
-                    <a asp-action="Edit" asp-route-id="@item.Code" class="btn btn-sm btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@item.Code" class="btn btn-sm btn-danger">Delete</a>
+                    <a asp-action="Details" asp-route-id="@item.Code" class="btn btn-sm btn-info">@Loc.Get("View", lang)</a>
+                    <a asp-action="Edit" asp-route-id="@item.Code" class="btn btn-sm btn-warning">@Loc.Get("Edit", lang)</a>
+                    <a asp-action="Delete" asp-route-id="@item.Code" class="btn btn-sm btn-danger">@Loc.Get("Delete", lang)</a>
                 </td>
             </tr>
         }

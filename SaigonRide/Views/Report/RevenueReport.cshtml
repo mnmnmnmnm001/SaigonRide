@@ -1,23 +1,25 @@
 @model SaigonRide.Services.RevenueByVehicleReport
+@inject SaigonRide.Services.ILocalizationService Loc
 
 @{
     ViewData["Title"] = "Revenue Report";
+    var lang = Context.Session.GetString("Lang") ?? "en";
 }
 
-<h1>Revenue Report by Vehicle Category</h1>
+<h1>@Loc.Get("RevenueReportByVehicleCategory", lang)</h1>
 
 <div class="row mb-3">
     <div class="col-md-4">
         <form asp-action="RevenueReport" method="get" class="form-inline">
             <div class="form-group mb-2 me-2">
-                <label for="startDate" class="me-2">Start Date:</label>
-                <input type="date" id="startDate" name="startDate" class="form-control" value="@((DateTime)ViewData["StartDate"]).ToString(" yyyy-MM-dd")" />
+                <label for="startDate" class="me-2">@Loc.Get("StartDate", lang):</label>
+                <input type="date" id="startDate" name="startDate" class="form-control" value="@((DateTime)ViewData["StartDate"]).ToString("yyyy-MM-dd")" />
             </div>
             <div class="form-group mb-2 me-2">
-                <label for="endDate" class="me-2">End Date:</label>
+                <label for="endDate" class="me-2">@Loc.Get("EndDate", lang):</label>
                 <input type="date" id="endDate" name="endDate" class="form-control" value="@((DateTime)ViewData["EndDate"]).ToString("yyyy-MM-dd")" />
             </div>
-            <button type="submit" class="btn btn-primary">Filter</button>
+            <button type="submit" class="btn btn-primary">@Loc.Get("Filter", lang)</button>
         </form>
     </div>
 </div>
@@ -26,24 +28,24 @@
 {
     <div class="card">
         <div class="card-header">
-            <h5>@Model.VehicleType</h5>
+            <h5>@Loc.Get(Model.VehicleType ?? "", lang)</h5>
         </div>
         <div class="card-body">
             <table class="table">
                 <tr>
-                    <td><strong>Total Rentals:</strong></td>
+                    <td><strong>@Loc.Get("TotalRentals", lang):</strong></td>
                     <td>@Model.RentalCount</td>
                 </tr>
                 <tr>
-                    <td><strong>Total Revenue:</strong></td>
+                    <td><strong>@Loc.Get("TotalRevenue", lang):</strong></td>
                     <td>@string.Format("{0:N0}", Model.TotalRevenue) VND</td>
                 </tr>
                 <tr>
-                    <td><strong>Average Fare:</strong></td>
+                    <td><strong>@Loc.Get("AverageFare", lang):</strong></td>
                     <td>@string.Format("{0:N0}", Model.AverageFare) VND</td>
                 </tr>
                 <tr>
-                    <td><strong>Total Discount Applied:</strong></td>
+                    <td><strong>@Loc.Get("TotalDiscountApplied", lang):</strong></td>
                     <td>@string.Format("{0:N0}", Model.TotalDiscount) VND</td>
                 </tr>
             </table>
@@ -53,14 +55,14 @@
 else
 {
     <div class="alert alert-info">
-        No rental data available for the selected period.
+        @Loc.Get("NoRentalData", lang)
         <br/>
 
-        <small>Selected range: @((DateTime?)ViewData["StartDate"])?.ToString("yyyy-MM-dd" ?? "Not selected") to @((DateTime?)ViewData["EndDate"])?.ToString("yyyy-MM-dd" ?? "Not selected")</small>
+        <small>@Loc.Get("SelectedRange", lang) @((DateTime?)ViewData["StartDate"])?.ToString("yyyy-MM-dd" ?? Loc.Get("NotSelected", lang)) to @((DateTime?)ViewData["EndDate"])?.ToString("yyyy-MM-dd" ?? Loc.Get("NotSelected", lang))</small>
         <!--(DateTime?) casts to a nullable DateTime-->
     </div>
 }
 
 <div class="mt-3">
-    <a href="/" class="btn btn-secondary">Back to Dashboard</a>
+    <a href="/" class="btn btn-secondary">@Loc.Get("BackToDashboard", lang)</a>
 </div>

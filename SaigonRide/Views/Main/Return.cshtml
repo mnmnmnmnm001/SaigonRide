@@ -1,7 +1,9 @@
+@inject SaigonRide.Services.ILocalizationService Loc
 @{
     ViewData["Title"] = "Return Vehicle";
     var stations = ViewBag.Stations as List<SaigonRide.Models.Station> ?? new List<SaigonRide.Models.Station>();
     var vehicles = ViewBag.Vehicles as List<SaigonRide.Models.Vehicle> ?? new List<SaigonRide.Models.Vehicle>();
+    var lang = Context.Session.GetString("Lang") ?? "en";
 }
 
 <div class="container mt-4">
@@ -9,7 +11,7 @@
         <div class="col-md-8 offset-md-2">
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title mb-0">Return Vehicle</h2>
+                    <h2 class="card-title mb-0">@Loc.Get("ReturnVehicle", lang)</h2>
                 </div>
                 <div class="card-body">
                     @if (TempData["Error"] != null)
@@ -36,43 +38,46 @@
 
                     <form asp-action="ProcessReturn" method="post" id="returnForm" novalidate>
                         <div class="mb-3">
-                            <label for="vehicleCode" class="form-label">Vehicle Code <span class="text-danger">*</span></label>
+                            <label for="vehicleCode" class="form-label">@Loc.Get("VehicleCode", lang) <span class="text-danger">*</span></label>
                             <select name="vehicleCode" id="vehicleCode" class="form-control" required>
-                                <option value="">-- Select a Vehicle in Transit --</option>
+                                <option value="">@Loc.Get("SelectVehicleInTransit", lang)</option>
                                 @foreach(var v in vehicles)
                                 {
-                                    <option value="@v.Code">@v.Code - @v.Type (@v.CurrentPos)</option>
+                                    <option value="@v.Code">@v.Code - @Loc.Get(v.Type ?? "", lang) (@Loc.Get("InTransit", lang))</option>
                                 }
                             </select>
                             <div class="invalid-feedback">
-                                Please select a vehicle to return.
+                                @Loc.Get("PleaseSelectVehicle", lang)
+                            </div>
+                            <div id="timeUsedContainer" style="display:none;" class="mt-2 text-info fw-bold">
+                                <strong>@Loc.Get("TimeUsed", lang):</strong> <span id="timeUsedDisplay"></span>
                             </div>
                             @if (vehicles.Count == 0)
                             {
-                                <small class="form-text text-muted d-block mt-2">No vehicles currently in transit.</small>
+                                <small class="form-text text-muted d-block mt-2">@Loc.Get("NoVehiclesInTransit", lang)</small>
                             }
                         </div>
 
                         <div class="mb-3">
-                            <label for="returnStationId" class="form-label">Return Station <span class="text-danger">*</span></label>
+                            <label for="returnStationId" class="form-label">@Loc.Get("ReturnStation", lang) <span class="text-danger">*</span></label>
                             <select name="returnStationId" id="returnStationId" class="form-control" required>
-                                <option value="">-- Select a Return Station --</option>
+                                <option value="">@Loc.Get("SelectReturnStation", lang)</option>
                                 @foreach(var s in stations)
                                 {
-                                    var capacityPercent = (s.CurrentCapacity * 100) / s.MaxCapacity;
+                                    var capacityPercent = (s.CurrentCapacity * 100) / (s.MaxCapacity > 0 ? s.MaxCapacity : 1);
                                     <option value="@s.StationId" data-capacity="@s.CurrentCapacity" data-max-capacity="@s.MaxCapacity">
-                                        @s.Name (@s.CurrentCapacity/@s.MaxCapacity) @(capacityPercent >= 90 ? "- ALMOST FULL" : "")
+                                        @Loc.GetStationName(s.Name ?? "", lang) (@s.CurrentCapacity/@s.MaxCapacity) @(capacityPercent >= 90 ? Loc.Get("AlmostFull", lang) : "")
                                     </option>
                                 }
                             </select>
                             <div class="invalid-feedback">
-                                Please select a return station.
+                                @Loc.Get("PleaseSelectReturnStation", lang)
                             </div>
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button class="btn btn-primary" type="submit" id="submitBtn">Return Vehicle</button>
-                            <a asp-action="Index" asp-controller="Main" class="btn btn-secondary">Back</a>
+                            <button class="btn btn-primary" type="submit" id="submitBtn">@Loc.Get("ReturnVehicle", lang)</button>
+                            <a asp-action="Index" asp-controller="Main" class="btn btn-secondary">@Loc.Get("Back", lang)</a>
                         </div>
                     </form>
                 </div>
@@ -94,7 +99,7 @@
             event.preventDefault();
             event.stopPropagation();
             vehicleSelect.classList.add('is-invalid');
-            showAlert('Please select a vehicle to return.', 'danger');
+            showAlert('@Loc.Get("PleaseSelectVehicle", lang)', 'danger');
             return false;
         }
 
@@ -102,7 +107,7 @@
             event.preventDefault();
             event.stopPropagation();
             stationSelect.classList.add('is-invalid');
-            showAlert('Please select a return station.', 'danger');
+            showAlert('@Loc.Get("PleaseSelectReturnStation", lang)', 'danger');
             return false;
         }
 
@@ -115,16 +120,54 @@
             event.preventDefault();
             event.stopPropagation();
             stationSelect.classList.add('is-invalid');
-            showAlert('Selected station is at full capacity. Please choose another station.', 'danger');
+            showAlert('@Loc.Get("StationFullCapacity", lang)', 'danger');
             return false;
         }
 
         form.classList.add('was-validated');
     }, false);
 
-    // Remove is-invalid class when user selects values
+    const startTimes = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.StartTimes ?? new Dictionary<string, string>()));
+    let timeInterval;
+
+    function updateTimeUsed() {
+        const selectedVehicle = vehicleSelect.value;
+        const container = document.getElementById('timeUsedContainer');
+        const display = document.getElementById('timeUsedDisplay');
+        
+        if (selectedVehicle && startTimes[selectedVehicle]) {
+            container.style.display = 'block';
+            
+            if (timeInterval) clearInterval(timeInterval);
+            
+            const startTime = new Date(startTimes[selectedVehicle]);
+            
+            const renderTime = () => {
+                const now = new Date();
+                const diffMs = now - startTime;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffSecs = Math.floor((diffMs % 60000) / 1000);
+                const hrs = Math.floor(diffMins / 60);
+                const mins = diffMins % 60;
+                
+                let timeStr = "";
+                if (hrs > 0) timeStr += hrs + "h ";
+                timeStr += mins + "m " + diffSecs + "s";
+                
+                display.innerText = timeStr;
+            };
+            
+            renderTime();
+            timeInterval = setInterval(renderTime, 1000);
+        } else {
+            container.style.display = 'none';
+            if (timeInterval) clearInterval(timeInterval);
+        }
+    }
+
     vehicleSelect.addEventListener('change', function() {
         this.classList.remove('is-invalid');
+        updateTimeUsed();
     });
 
     stationSelect.addEventListener('change', function() {

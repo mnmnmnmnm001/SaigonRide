@@ -1,30 +1,32 @@
 @model List<SaigonRide.Models.Rental>
+@inject SaigonRide.Services.ILocalizationService Loc
 
 @{
     ViewData["Title"] = "Rental Management";
+    var lang = Context.Session.GetString("Lang") ?? "en";
 }
 
-<h1>Rental Management</h1>
+<h1>@Loc.Get("RentalManagement", lang)</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Start New Rental</a>
+    <a asp-action="Create" class="btn btn-primary">@Loc.Get("StartNewRental", lang)</a>
 </p>
 
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Rental ID</th>
-            <th>User ID</th>
-            <th>Vehicle</th>
-            <th>From Station</th>
-            <th>To Station</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Fare</th>
-            <th>Discount</th>
-            <th>Final Fare</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>@Loc.Get("RentalID", lang)</th>
+            <th>@Loc.Get("UserID", lang)</th>
+            <th>@Loc.Get("VehicleLabel", lang)</th>
+            <th>@Loc.Get("FromStation", lang)</th>
+            <th>@Loc.Get("ToStation", lang)</th>
+            <th>@Loc.Get("StartTime", lang)</th>
+            <th>@Loc.Get("EndTime", lang)</th>
+            <th>@Loc.Get("Fare", lang)</th>
+            <th>@Loc.Get("Discount", lang)</th>
+            <th>@Loc.Get("FinalFare", lang)</th>
+            <th>@Loc.Get("Status", lang)</th>
+            <th>@Loc.Get("Actions", lang)</th>
         </tr>
     </thead>
     <tbody>
@@ -33,33 +35,33 @@
             <tr>
                 <td>@item.RentalId</td>
                 <td>@item.UserId</td>
-                <td>@item.Vehicle?.Type (@item.Vehicle?.Code)</td>
-                <td>@item.StartStation?.Name</td>
-                <td>@item.EndStation?.Name</td>
+                <td>@Loc.Get(item.Vehicle?.Type ?? "", lang) (@item.Vehicle?.Code)</td>
+                <td>@Loc.GetStationName(item.StartStation?.Name ?? "", lang)</td>
+                <td>@Loc.GetStationName(item.EndStation?.Name ?? "", lang)</td>
                 <td>@item.TimeStart.ToString("yyyy-MM-dd HH:mm")</td>
-                <td>@(item.TimeEnd != DateTime.MinValue ? item.TimeEnd.ToString("yyyy-MM-dd HH:mm") : "In Progress")</td>
+                <td>@(item.TimeEnd != DateTime.MinValue ? item.TimeEnd.ToString("yyyy-MM-dd HH:mm") : Loc.Get("InProgress", lang))</td>
                 <td>@string.Format("{0:N0}", item.CalculatedFare) VND</td>
                 <td>@string.Format("{0:N0}", item.DiscountApplied) VND</td>
                 <td>@string.Format("{0:N0}", item.FinalFare) VND</td>
                 <td>
                     @if (item.Status == 0)
                     {
-                        <span class="badge bg-warning">Active</span>
+                        <span class="badge bg-warning">@Loc.Get("ActiveRental", lang)</span>
                     }
                     else if (item.Status == 1)
                     {
-                        <span class="badge bg-success">Completed</span>
+                        <span class="badge bg-success">@Loc.Get("Completed", lang)</span>
                     }
                     else
                     {
-                        <span class="badge bg-danger">Cancelled</span>
+                        <span class="badge bg-danger">@Loc.Get("Cancelled", lang)</span>
                     }
                 </td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.RentalId" class="btn btn-sm btn-info">View</a>
+                    <a asp-action="Details" asp-route-id="@item.RentalId" class="btn btn-sm btn-info">@Loc.Get("View", lang)</a>
                     @if (item.Status == 0)
                     {
-                        <a asp-action="EndRental" asp-route-id="@item.RentalId" class="btn btn-sm btn-success">End Rental</a>
+                        <a asp-action="EndRental" asp-route-id="@item.RentalId" class="btn btn-sm btn-success">@Loc.Get("EndRental", lang)</a>
                     }
                 </td>
             </tr>

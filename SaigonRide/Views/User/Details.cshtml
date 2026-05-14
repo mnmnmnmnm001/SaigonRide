@@ -1,10 +1,12 @@
 @model SaigonRide.Models.User
+@inject SaigonRide.Services.ILocalizationService Loc
 
 @{
     ViewData["Title"] = "User Details";
+    var lang = Context.Session.GetString("Lang") ?? "en";
 }
 
-<h1>User Details</h1>
+<h1>@Loc.Get("UserDetails", lang)</h1>
 
 <div class="container">
     <div class="row">
@@ -14,79 +16,79 @@
                     <h5>
                         @if (Model is SaigonRide.Models.LocalCommuter)
                         {
-                            <span class="badge bg-primary">Local Commuter</span>
+                            <span class="badge bg-primary">@Loc.Get("LocalCommuter", lang)</span>
                         }
                         else
                         {
-                            <span class="badge bg-info">Foreign Tourist</span>
+                            <span class="badge bg-info">@Loc.Get("ForeignTourist", lang)</span>
                         }
                         - @Model.BankNum
                     </h5>
                 </div>
                 <div class="card-body">
                     <dl class="row">
-                        <dt class="col-sm-3">Bank Account</dt>
+                        <dt class="col-sm-3">@Loc.Get("BankAccount", lang)</dt>
                         <dd class="col-sm-9">@Model.BankNum</dd>
 
-                        <dt class="col-sm-3">Payment Method</dt>
+                        <dt class="col-sm-3">@Loc.Get("PaymentMethod", lang)</dt>
                         <dd class="col-sm-9">@Model.ChosenPaymentCode</dd>
 
-                        <dt class="col-sm-3">Total Paid</dt>
+                        <dt class="col-sm-3">@Loc.Get("TotalPaid", lang)</dt>
                         <dd class="col-sm-9">@string.Format("{0:N0}", Model.Payed) VND</dd>
 
                         @if (Model is SaigonRide.Models.LocalCommuter local)
                         {
-                            <dt class="col-sm-3">MoMo Enabled</dt>
+                            <dt class="col-sm-3">@Loc.Get("MoMoEnabled", lang)</dt>
                             <dd class="col-sm-9">
                                 @if (local.P_MoMo)
                                 {
-                                    <span class="badge bg-success">Yes</span>
+                                    <span class="badge bg-success">@Loc.Get("Yes", lang)</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-secondary">No</span>
+                                    <span class="badge bg-secondary">@Loc.Get("No", lang)</span>
                                 }
                             </dd>
 
-                            <dt class="col-sm-3">VNPay Enabled</dt>
+                            <dt class="col-sm-3">@Loc.Get("VNPayEnabled", lang)</dt>
                             <dd class="col-sm-9">
                                 @if (local.P_VNPay)
                                 {
-                                    <span class="badge bg-success">Yes</span>
+                                    <span class="badge bg-success">@Loc.Get("Yes", lang)</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-secondary">No</span>
+                                    <span class="badge bg-secondary">@Loc.Get("No", lang)</span>
                                 }
                             </dd>
                         }
 
                         @if (Model is SaigonRide.Models.ForeignTourist tourist)
                         {
-                            <dt class="col-sm-3">Passport</dt>
+                            <dt class="col-sm-3">@Loc.Get("Passport", lang)</dt>
                             <dd class="col-sm-9">@tourist.Passport</dd>
 
-                            <dt class="col-sm-3">Apple Pay Enabled</dt>
+                            <dt class="col-sm-3">@Loc.Get("ApplePayEnabled", lang)</dt>
                             <dd class="col-sm-9">
                                 @if (tourist.P_ApplePay)
                                 {
-                                    <span class="badge bg-success">Yes</span>
+                                    <span class="badge bg-success">@Loc.Get("Yes", lang)</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-secondary">No</span>
+                                    <span class="badge bg-secondary">@Loc.Get("No", lang)</span>
                                 }
                             </dd>
 
-                            <dt class="col-sm-3">PayPal Enabled</dt>
+                            <dt class="col-sm-3">@Loc.Get("PayPalEnabled", lang)</dt>
                             <dd class="col-sm-9">
                                 @if (tourist.P_PayPal)
                                 {
-                                    <span class="badge bg-success">Yes</span>
+                                    <span class="badge bg-success">@Loc.Get("Yes", lang)</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-secondary">No</span>
+                                    <span class="badge bg-secondary">@Loc.Get("No", lang)</span>
                                 }
                             </dd>
                         }
@@ -95,9 +97,9 @@
             </div>
 
             <div class="mt-3">
-                <a asp-action="Edit" asp-route-id="@Model.BankNum" class="btn btn-warning">Edit</a>
-                <a asp-action="Delete" asp-route-id="@Model.BankNum" class="btn btn-danger">Delete</a>
-                <a asp-action="Index" class="btn btn-secondary">Back to Users</a>
+                <a asp-action="Edit" asp-route-id="@Model.BankNum" class="btn btn-warning">@Loc.Get("Edit", lang)</a>
+                <a asp-action="Delete" asp-route-id="@Model.BankNum" class="btn btn-danger">@Loc.Get("Delete", lang)</a>
+                <a asp-action="Index" class="btn btn-secondary">@Loc.Get("BackToUsers", lang)</a>
             </div>
         </div>
     </div>

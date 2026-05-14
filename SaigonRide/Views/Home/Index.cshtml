@@ -1,21 +1,23 @@
-﻿@{
+@inject SaigonRide.Services.ILocalizationService Loc
+@{
     ViewData["Title"] = "SaigonRide - Vehicle Rental System";
     var isAdmin = ViewData["IsAdmin"] is bool && (bool)ViewData["IsAdmin"];
+    var lang = Context.Session.GetString("Lang") ?? "en";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="display-4 mb-0">Welcome to SaigonRide</h1>
+    <h1 class="display-4 mb-0">@Loc.Get("WelcomeToSaigonRide", lang)</h1>
     <div>
-        <span class="me-3">Admin: <strong>@(isAdmin ? "Logged In" : "Not Logged In")</strong></span>
+        <span class="me-3">@Loc.Get("AdminTitle", lang) <strong>@(isAdmin ? Loc.Get("LoggedIn", lang) : Loc.Get("NotLoggedIn", lang))</strong></span>
         @if (isAdmin)
         {
-            <a href="/Admin/Logout" class="btn btn-danger btn-sm">Logout</a>
+            <a href="/Admin/Logout" class="btn btn-danger btn-sm">@Loc.Get("LogoutTitle", lang)</a>
         }
     </div>
 </div>
 
 <div class="text-center mb-4">
-    <p>Distributed Vehicle Rental System</p>
+    <p>@Loc.Get("DistributedSystem", lang)</p>
 </div>
 
 <div class="container mt-5">
@@ -23,27 +25,27 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Total Users</h5>
+                    <h5 class="card-title">@Loc.Get("TotalUsers", lang)</h5>
                     <p class="card-text display-6">@ViewData["TotalUsers"]</p>
-                    <a href="/User" class="btn btn-primary">Manage Users</a>
+                    <a href="/User" class="btn btn-primary">@Loc.Get("ManageUsers", lang)</a>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Total Vehicles</h5>
+                    <h5 class="card-title">@Loc.Get("TotalVehicles", lang)</h5>
                     <p class="card-text display-6">@ViewData["TotalVehicles"]</p>
-                    <a href="/Vehicle" class="btn btn-primary">Manage Vehicles</a>
+                    <a href="/Vehicle" class="btn btn-primary">@Loc.Get("ManageVehicles", lang)</a>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Total Stations</h5>
+                    <h5 class="card-title">@Loc.Get("TotalStations", lang)</h5>
                     <p class="card-text display-6">@ViewData["TotalStations"]</p>
-                    <a href="/Station" class="btn btn-primary">Manage Stations</a>
+                    <a href="/Station" class="btn btn-primary">@Loc.Get("ManageStations", lang)</a>
                 </div>
             </div>
         </div>
@@ -55,27 +57,27 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Total Rentals</h5>
+                        <h5 class="card-title">@Loc.Get("TotalRentals", lang)</h5>
                         <p class="card-text display-6">@ViewData["TotalRentals"]</p>
-                        <a href="/Rental" class="btn btn-primary">View Rentals</a>
+                        <a href="/Rental" class="btn btn-primary">@Loc.Get("ViewRentals", lang)</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Total Revenue</h5>
+                        <h5 class="card-title">@Loc.Get("TotalRevenue", lang)</h5>
                         <p class="card-text display-6">@string.Format("{0:N0}", ViewData["TotalRevenue"]) VND</p>
-                        <a href="/Report/RevenueReport" class="btn btn-primary">View Report</a>
+                        <a href="/Report/RevenueReport" class="btn btn-primary">@Loc.Get("ViewReport", lang)</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">System Status</h5>
-                        <p class="card-text"><span class="badge bg-success">Active</span></p>
-                        <a href="/Report/InventoryReport" class="btn btn-primary">Inventory Report</a>
+                        <h5 class="card-title">@Loc.Get("SystemStatus", lang)</h5>
+                        <p class="card-text"><span class="badge bg-success">@Loc.Get("Active", lang)</span></p>
+                        <a href="/Report/InventoryReport" class="btn btn-primary">@Loc.Get("InventoryReport", lang)</a>
                     </div>
                 </div>
             </div>

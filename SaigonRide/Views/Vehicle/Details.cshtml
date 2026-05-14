@@ -1,10 +1,12 @@
 @model SaigonRide.Models.Vehicle
+@inject SaigonRide.Services.ILocalizationService Loc
 
 @{
     ViewData["Title"] = "Vehicle Details";
+    var lang = Context.Session.GetString("Lang") ?? "en";
 }
 
-<h1>Vehicle Details</h1>
+<h1>@Loc.Get("VehicleDetails", lang)</h1>
 
 <div class="container">
     <div class="row">
@@ -15,31 +17,31 @@
                 </div>
                 <div class="card-body">
                     <dl class="row">
-                        <dt class="col-sm-3">Code</dt>
+                        <dt class="col-sm-3">@Loc.Get("Code", lang)</dt>
                         <dd class="col-sm-9">@Model.Code</dd>
 
-                        <dt class="col-sm-3">Type</dt>
-                        <dd class="col-sm-9">@Model.Type</dd>
+                        <dt class="col-sm-3">@Loc.Get("Type", lang)</dt>
+                        <dd class="col-sm-9">@Loc.Get(Model.Type ?? "", lang)</dd>
 
-                        <dt class="col-sm-3">Fare Per Minute</dt>
+                        <dt class="col-sm-3">@Loc.Get("FarePerMin", lang)</dt>
                         <dd class="col-sm-9">@string.Format("{0:N0}", Model.FarePerMin) VND</dd>
 
-                        <dt class="col-sm-3">Current Position</dt>
-                        <dd class="col-sm-9">@Model.CurrentPos</dd>
+                        <dt class="col-sm-3">@Loc.Get("CurrentPosition", lang)</dt>
+                        <dd class="col-sm-9">@Loc.GetStationName(Model.CurrentPos ?? "", lang)</dd>
 
-                        <dt class="col-sm-3">Status</dt>
+                        <dt class="col-sm-3">@Loc.Get("Status", lang)</dt>
                         <dd class="col-sm-9">
                             @if (Model.State == 0)
                             {
-                                <span class="badge bg-success" style="font-size: 1rem;">Available</span>
+                                <span class="badge bg-success" style="font-size: 1rem;">@Loc.Get("Available", lang)</span>
                             }
                             else if (Model.State == 1)
                             {
-                                <span class="badge bg-warning" style="font-size: 1rem;">In Transit</span>
+                                <span class="badge bg-warning" style="font-size: 1rem;">@Loc.Get("InTransit", lang)</span>
                             }
                             else
                             {
-                                <span class="badge bg-danger" style="font-size: 1rem;">Maintenance</span>
+                                <span class="badge bg-danger" style="font-size: 1rem;">@Loc.Get("Maintenance", lang)</span>
                             }
                         </dd>
                     </dl>
@@ -47,9 +49,9 @@
             </div>
 
             <div class="mt-3">
-                <a asp-action="Edit" asp-route-id="@Model.Code" class="btn btn-warning">Edit</a>
-                <a asp-action="Delete" asp-route-id="@Model.Code" class="btn btn-danger">Delete</a>
-                <a asp-action="Index" class="btn btn-secondary">Back to Vehicles</a>
+                <a asp-action="Edit" asp-route-id="@Model.Code" class="btn btn-warning">@Loc.Get("Edit", lang)</a>
+                <a asp-action="Delete" asp-route-id="@Model.Code" class="btn btn-danger">@Loc.Get("Delete", lang)</a>
+                <a asp-action="Index" class="btn btn-secondary">@Loc.Get("BackToVehicles", lang)</a>
             </div>
         </div>
     </div>

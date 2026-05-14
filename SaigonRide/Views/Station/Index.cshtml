@@ -1,24 +1,26 @@
 @model List<SaigonRide.Models.Station>
+@inject SaigonRide.Services.ILocalizationService Loc
 
 @{
     ViewData["Title"] = "Station Management";
+    var lang = Context.Session.GetString("Lang") ?? "en";
 }
 
-<h1>Station Management</h1>
+<h1>@Loc.Get("StationManagement", lang)</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Add New Station</a>
+    <a asp-action="Create" class="btn btn-primary">@Loc.Get("AddNewStation", lang)</a>
 </p>
 
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Current / Max Capacity</th>
-            <th>Utilization Ratio</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>@Loc.Get("ID", lang)</th>
+            <th>@Loc.Get("Name", lang)</th>
+            <th>@Loc.Get("CurrentMaxCapacity", lang)</th>
+            <th>@Loc.Get("UtilizationRatio", lang)</th>
+            <th>@Loc.Get("Status", lang)</th>
+            <th>@Loc.Get("Actions", lang)</th>
         </tr>
     </thead>
     <tbody>
@@ -26,7 +28,7 @@
         {
             <tr>
                 <td>@item.StationId</td>
-                <td>@item.Name</td>
+                <td>@Loc.GetStationName(item.Name ?? "", lang)</td>
                 <td>@item.CurrentCapacity / @item.MaxCapacity</td>
                 <td>
                     @{
@@ -40,22 +42,22 @@
                         double ratio2 = item.GetRatio();
                         if (ratio2 < 0.2)
                         {
-                            <span class="badge bg-danger">Low</span>
+                            <span class="badge bg-danger">@Loc.Get("Low", lang)</span>
                         }
                         else if (ratio2 < 0.5)
                         {
-                            <span class="badge bg-warning">Medium</span>
+                            <span class="badge bg-warning">@Loc.Get("Medium", lang)</span>
                         }
                         else
                         {
-                            <span class="badge bg-success">High</span>
+                            <span class="badge bg-success">@Loc.Get("High", lang)</span>
                         }
                     }
                 </td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.StationId" class="btn btn-sm btn-info">View</a>
-                    <a asp-action="Edit" asp-route-id="@item.StationId" class="btn btn-sm btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@item.StationId" class="btn btn-sm btn-danger">Delete</a>
+                    <a asp-action="Details" asp-route-id="@item.StationId" class="btn btn-sm btn-info">@Loc.Get("View", lang)</a>
+                    <a asp-action="Edit" asp-route-id="@item.StationId" class="btn btn-sm btn-warning">@Loc.Get("Edit", lang)</a>
+                    <a asp-action="Delete" asp-route-id="@item.StationId" class="btn btn-sm btn-danger">@Loc.Get("Delete", lang)</a>
                 </td>
             </tr>
         }

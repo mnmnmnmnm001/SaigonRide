@@ -1,38 +1,40 @@
 @model SaigonRide.Models.Station
+@inject SaigonRide.Services.ILocalizationService Loc
 
 @{
     ViewData["Title"] = "Station Details";
+    var lang = Context.Session.GetString("Lang") ?? "en";
 }
 
-<h1>Station Details</h1>
+<h1>@Loc.Get("StationDetails", lang)</h1>
 
 <div class="container">
     <div class="row">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    <h5>@Model.Name</h5>
+                    <h5>@Loc.GetStationName(Model.Name ?? "", lang)</h5>
                 </div>
                 <div class="card-body">
-                    <p><strong>Station ID:</strong> @Model.StationId</p>
-                    <p><strong>Current Capacity:</strong> @Model.CurrentCapacity</p>
-                    <p><strong>Max Capacity:</strong> @Model.MaxCapacity</p>
-                    <p><strong>Utilization Ratio:</strong> @string.Format("{0:P2}", Model.GetRatio())</p>
+                    <p><strong>@Loc.Get("StationID", lang):</strong> @Model.StationId</p>
+                    <p><strong>@Loc.Get("CurrentMaxCapacity", lang).Split('/')[0].Trim():</strong> @Model.CurrentCapacity</p>
+                    <p><strong>@Loc.Get("CurrentMaxCapacity", lang).Split('/')[1].Trim():</strong> @Model.MaxCapacity</p>
+                    <p><strong>@Loc.Get("UtilizationRatio", lang):</strong> @string.Format("{0:P2}", Model.GetRatio())</p>
                     <p>
-                        <strong>Status:</strong>
+                        <strong>@Loc.Get("Status", lang):</strong>
                         @{
                             double ratio = Model.GetRatio();
                             if (ratio < 0.2)
                             {
-                                <span class="badge bg-danger">Low Inventory</span>
+                                <span class="badge bg-danger">@Loc.Get("LowInventory", lang)</span>
                             }
                             else if (ratio < 0.5)
                             {
-                                <span class="badge bg-warning">Medium</span>
+                                <span class="badge bg-warning">@Loc.Get("Medium", lang)</span>
                             }
                             else
                             {
-                                <span class="badge bg-success">High</span>
+                                <span class="badge bg-success">@Loc.Get("High", lang)</span>
                             }
                         }
                     </p>
@@ -42,7 +44,7 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    <h5>Capacity Chart</h5>
+                    <h5>@Loc.Get("CapacityChart", lang)</h5>
                 </div>
                 <div class="card-body">
                     <div class="progress" style="height: 50px;">
@@ -50,14 +52,14 @@
                             @string.Format("{0:P0}", Model.GetRatio())
                         </div>
                     </div>
-                    <p class="mt-2">@Model.CurrentCapacity vehicles out of @Model.MaxCapacity</p>
+                    <p class="mt-2">@Model.CurrentCapacity @Loc.Get("VehiclesOutOf", lang) @Model.MaxCapacity</p>
                 </div>
             </div>
         </div>
     </div>
     <div class="mt-3">
-        <a asp-action="Edit" asp-route-id="@Model.StationId" class="btn btn-warning">Edit</a>
-        <a asp-action="Delete" asp-route-id="@Model.StationId" class="btn btn-danger">Delete</a>
-        <a asp-action="Index" class="btn btn-secondary">Back to Stations</a>
+        <a asp-action="Edit" asp-route-id="@Model.StationId" class="btn btn-warning">@Loc.Get("Edit", lang)</a>
+        <a asp-action="Delete" asp-route-id="@Model.StationId" class="btn btn-danger">@Loc.Get("Delete", lang)</a>
+        <a asp-action="Index" class="btn btn-secondary">@Loc.Get("BackToStations", lang)</a>
     </div>
 </div>

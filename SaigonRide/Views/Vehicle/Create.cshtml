@@ -1,10 +1,12 @@
 @model SaigonRide.Models.Vehicle
+@inject SaigonRide.Services.ILocalizationService Loc
 
 @{
     ViewData["Title"] = "Create Vehicle";
+    var lang = Context.Session.GetString("Lang") ?? "en";
 }
 
-<h1>Add New Vehicle</h1>
+<h1>@Loc.Get("AddNewVehicle", lang)</h1>
 
 <div class="row">
     <div class="col-md-6 offset-md-3">
@@ -12,37 +14,48 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group mb-3">
-                <label for="Type" class="form-label">Vehicle Type</label>
+                <label for="Type" class="form-label">@Loc.Get("VehicleType", lang)</label>
                 <select id="Type" name="Type" class="form-control" required>
-                    <option value="">-- Select Type --</option>
-                    <option value="StandardBike">Standard Bike</option>
-                    <option value="EBike">E-Bike</option>
-                    <option value="Scooter">E-Scooter</option>
+                    <option value="">@Loc.Get("SelectType", lang)</option>
+                    <option value="StandardBike">@Loc.Get("StandardBike", lang)</option>
+                    <option value="EBike">@Loc.Get("EBike", lang)</option>
+                    <option value="Scooter">@Loc.Get("Scooter", lang)</option>
                 </select>
                 <span asp-validation-for="Type" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label for="Code" class="form-label">Vehicle Code</label>
+                <label for="Code" class="form-label">@Loc.Get("VehicleCode", lang)</label>
                 <input type="text" id="Code" name="Code" class="form-control" required />
                 <span asp-validation-for="Code" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label for="FarePerMin" class="form-label">Fare Per Minute (VND)</label>
+                <label for="FarePerMin" class="form-label">@Loc.Get("FarePerMin", lang) (VND)</label>
                 <input type="number" id="FarePerMin" name="FarePerMin" class="form-control" step="0.01" required />
-                <small class="form-text text-muted">Standard Bike: 500, E-Bike: 1000, Scooter: 1500</small>
+                <small class="form-text text-muted">@Loc.Get("StandardBike", lang): 500, @Loc.Get("EBike", lang): 1000, @Loc.Get("Scooter", lang): 1500</small>
                 <span asp-validation-for="FarePerMin" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label for="CurrentPos" class="form-label">Current Position</label>
-                <input type="text" id="CurrentPos" name="CurrentPos" class="form-control" required />
+                <label for="CurrentPos" class="form-label">@Loc.Get("CurrentPosition", lang)</label>
+                <select id="CurrentPos" name="CurrentPos" class="form-control" required>
+                    <option value="">@Loc.Get("SelectPosition", lang)</option>
+                    @if (ViewBag.Stations != null)
+                    {
+                        foreach (var station in ViewBag.Stations)
+                        {
+                            <option value="@station">@Loc.GetStationName(station, lang)</option>
+                        }
+                    }
+                    <option value="In Transit">@Loc.Get("InTransit", lang)</option>
+                    <option value="Maintenance">@Loc.Get("Maintenance", lang)</option>
+                </select>
                 <span asp-validation-for="CurrentPos" class="text-danger"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary">Create Vehicle</button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">@Loc.Get("AddNewVehicle", lang)</button>
+            <a asp-action="Index" class="btn btn-secondary">@Loc.Get("Cancel", lang)</a>
         </form>
     </div>
 </div>

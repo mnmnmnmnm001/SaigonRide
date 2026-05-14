@@ -1,51 +1,53 @@
 @model SaigonRide.Models.Rental
+@inject SaigonRide.Services.ILocalizationService Loc
 
 @{
     ViewData["Title"] = "Rental Details";
+    var lang = Context.Session.GetString("Lang") ?? "en";
 }
 
-<h1>Rental Details</h1>
+<h1>@Loc.Get("RentalDetails", lang)</h1>
 
 <div class="container">
     <div class="row">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    <h5>Rental Information</h5>
+                    <h5>@Loc.Get("RentalInformation", lang)</h5>
                 </div>
                 <div class="card-body">
-                    <p><strong>Rental ID:</strong> @Model.RentalId</p>
-                    <p><strong>User ID:</strong> @Model.UserId</p>
-                    <p><strong>Vehicle:</strong> @Model.Vehicle?.Type (@Model.Vehicle?.Code)</p>
-                    <p><strong>Start Station:</strong> @Model.StartStation?.Name</p>
-                    <p><strong>End Station:</strong> @Model.EndStation?.Name</p>
-                    <p><strong>Start Time:</strong> @Model.TimeStart.ToString("yyyy-MM-dd HH:mm:ss")</p>
-                    <p><strong>End Time:</strong> @(Model.TimeEnd != DateTime.MinValue ? Model.TimeEnd.ToString("yyyy-MM-dd HH:mm:ss") : "In Progress")</p>
+                    <p><strong>@Loc.Get("RentalID", lang):</strong> @Model.RentalId</p>
+                    <p><strong>@Loc.Get("UserID", lang):</strong> @Model.UserId</p>
+                    <p><strong>@Loc.Get("VehicleLabel", lang):</strong> @Model.Vehicle?.Type (@Model.Vehicle?.Code)</p>
+                    <p><strong>@Loc.Get("StartStation", lang):</strong> @Model.StartStation?.Name</p>
+                    <p><strong>@Loc.Get("EndStation", lang):</strong> @Model.EndStation?.Name</p>
+                    <p><strong>@Loc.Get("StartTime", lang):</strong> @Model.TimeStart.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                    <p><strong>@Loc.Get("EndTime", lang):</strong> @(Model.TimeEnd != DateTime.MinValue ? Model.TimeEnd.ToString("yyyy-MM-dd HH:mm:ss") : Loc.Get("InProgress", lang))</p>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    <h5>Fare Information</h5>
+                    <h5>@Loc.Get("FareInformation", lang)</h5>
                 </div>
                 <div class="card-body">
-                    <p><strong>Calculated Fare:</strong> @string.Format("{0:N0}", Model.CalculatedFare) VND</p>
-                    <p><strong>Discount Applied:</strong> @string.Format("{0:N0}", Model.DiscountApplied) VND</p>
-                    <p><strong>Final Fare:</strong> @string.Format("{0:N0}", Model.FinalFare) VND</p>
+                    <p><strong>@Loc.Get("CalculatedFare", lang):</strong> @string.Format("{0:N0}", Model.CalculatedFare) VND</p>
+                    <p><strong>@Loc.Get("DiscountApplied", lang):</strong> @string.Format("{0:N0}", Model.DiscountApplied) VND</p>
+                    <p><strong>@Loc.Get("FinalFare", lang):</strong> @string.Format("{0:N0}", Model.FinalFare) VND</p>
                     <p>
-                        <strong>Status:</strong>
+                        <strong>@Loc.Get("Status", lang):</strong>
                         @if (Model.Status == 0)
                         {
-                            <span class="badge bg-warning">Active</span>
+                            <span class="badge bg-warning">@Loc.Get("ActiveRental", lang)</span>
                         }
                         else if (Model.Status == 1)
                         {
-                            <span class="badge bg-success">Completed</span>
+                            <span class="badge bg-success">@Loc.Get("Completed", lang)</span>
                         }
                         else
                         {
-                            <span class="badge bg-danger">Cancelled</span>
+                            <span class="badge bg-danger">@Loc.Get("Cancelled", lang)</span>
                         }
                     </p>
                 </div>
@@ -55,8 +57,8 @@
     <div class="mt-3">
         @if (Model.Status == 0)
         {
-            <a asp-action="EndRental" asp-route-id="@Model.RentalId" class="btn btn-success">End Rental</a>
+            <a asp-action="EndRental" asp-route-id="@Model.RentalId" class="btn btn-success">@Loc.Get("EndRental", lang)</a>
         }
-        <a asp-action="Index" class="btn btn-secondary">Back to Rentals</a>
+        <a asp-action="Index" class="btn btn-secondary">@Loc.Get("BackToRentals", lang)</a>
     </div>
 </div>

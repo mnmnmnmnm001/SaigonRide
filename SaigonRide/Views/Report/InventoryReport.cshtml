@@ -1,10 +1,12 @@
 @model IEnumerable<SaigonRide.Services.StationInventoryReport>
+@inject SaigonRide.Services.ILocalizationService Loc
 
 @{
     ViewData["Title"] = "Inventory Report";
+    var lang = Context.Session.GetString("Lang") ?? "en";
 }
 
-<h1>Station Inventory / Utilization Report</h1>
+<h1>@Loc.Get("StationInventoryUtilizationReport", lang)</h1>
 
 @if (Model != null && Model.Any())
 {
@@ -14,38 +16,38 @@
             <div class="col-md-6 mb-3">
                 <div class="card">
                     <div class="card-header">
-                        <h5>@station.StationName</h5>
+                        <h5>@Loc.GetStationName(station.StationName ?? "", lang)</h5>
                     </div>
                     <div class="card-body">
                         <dl class="row">
-                            <dt class="col-sm-4">Station ID</dt>
+                            <dt class="col-sm-4">@Loc.Get("ID", lang)</dt>
                             <dd class="col-sm-8">@station.StationId</dd>
 
-                            <dt class="col-sm-4">Current Capacity</dt>
+                            <dt class="col-sm-4">@Loc.Get("CurrentMaxCapacity", lang)</dt>
                             <dd class="col-sm-8">@station.CurrentCapacity / @station.MaxCapacity</dd>
 
-                            <dt class="col-sm-4">Utilization Ratio</dt>
+                            <dt class="col-sm-4">@Loc.Get("UtilizationRatio", lang)</dt>
                             <dd class="col-sm-8">@string.Format("{0:P2}", station.UtilizationRatio)</dd>
 
-                            <dt class="col-sm-4">Status</dt>
+                            <dt class="col-sm-4">@Loc.Get("Status", lang)</dt>
                             <dd class="col-sm-8">
                                 @if (station.Status == "Low")
                                 {
-                                    <span class="badge bg-danger" style="font-size: 1rem;">Low Inventory</span>
+                                    <span class="badge bg-danger" style="font-size: 1rem;">@Loc.Get("LowInventory", lang)</span>
                                 }
                                 else if (station.Status == "Medium")
                                 {
-                                    <span class="badge bg-warning" style="font-size: 1rem;">Medium</span>
+                                    <span class="badge bg-warning" style="font-size: 1rem;">@Loc.Get("Medium", lang)</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-success" style="font-size: 1rem;">High</span>
+                                    <span class="badge bg-success" style="font-size: 1rem;">@Loc.Get("High", lang)</span>
                                 }
                             </dd>
                         </dl>
 
                         <div class="mt-3">
-                            <h6>Capacity Visualization</h6>
+                            <h6>@Loc.Get("CapacityVisualization", lang)</h6>
                             <div class="progress" style="height: 30px;">
                                 <div class="progress-bar" role="progressbar" style="width: @string.Format("{0:P0}", station.UtilizationRatio)" aria-valuenow="@station.CurrentCapacity" aria-valuemin="0" aria-valuemax="@station.MaxCapacity">
                                     @string.Format("{0:P0}", station.UtilizationRatio)
@@ -56,7 +58,7 @@
                         @if (station.Status == "Low")
                         {
                             <div class="alert alert-warning mt-3">
-                                <strong>Low Inventory Warning:</strong> This station has less than 20% capacity. Vehicles returned here will receive a 15% discount!
+                                @Loc.Get("LowInventoryWarning", lang)
                             </div>
                         }
                     </div>
@@ -68,10 +70,10 @@
 else
 {
     <div class="alert alert-info">
-        No inventory data available.
+        @Loc.Get("NoInventoryData", lang)
     </div>
 }
 
 <div class="mt-3">
-    <a href="/" class="btn btn-secondary">Back to Dashboard</a>
+    <a href="/" class="btn btn-secondary">@Loc.Get("BackToDashboard", lang)</a>
 </div>

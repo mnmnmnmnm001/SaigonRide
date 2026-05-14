@@ -1,24 +1,26 @@
 @model List<SaigonRide.Models.User>
+@inject SaigonRide.Services.ILocalizationService Loc
 
 @{
     ViewData["Title"] = "User Management";
+    var lang = Context.Session.GetString("Lang") ?? "en";
 }
 
-<h1>User Management</h1>
+<h1>@Loc.Get("UserManagement", lang)</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Add New User</a>
+    <a asp-action="Create" class="btn btn-primary">@Loc.Get("AddNewUser", lang)</a>
 </p>
 
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Bank Number</th>
-            <th>Type</th>
-            <th>Chosen Payment</th>
-            <th>Total Paid</th>
-            <th>Additional Info</th>
-            <th>Actions</th>
+            <th>@Loc.Get("BankNumber", lang)</th>
+            <th>@Loc.Get("UserType", lang)</th>
+            <th>@Loc.Get("ChosenPayment", lang)</th>
+            <th>@Loc.Get("TotalPaid", lang)</th>
+            <th>@Loc.Get("AdditionalInfo", lang)</th>
+            <th>@Loc.Get("Actions", lang)</th>
         </tr>
     </thead>
     <tbody>
@@ -29,11 +31,11 @@
                 <td>
                     @if (item is SaigonRide.Models.LocalCommuter)
                     {
-                        <span class="badge bg-primary">Local Commuter</span>
+                        <span class="badge bg-primary">@Loc.Get("LocalCommuter", lang)</span>
                     }
                     else
                     {
-                        <span class="badge bg-info">Foreign Tourist</span>
+                        <span class="badge bg-info">@Loc.Get("ForeignTourist", lang)</span>
                     }
                 </td>
                 <td>@item.ChosenPaymentCode</td>
@@ -41,17 +43,17 @@
                 <td>
                     @if (item is SaigonRide.Models.LocalCommuter local)
                     {
-                        <small>MoMo: @local.P_MoMo | VNPay: @local.P_VNPay</small>
+                        <small>MoMo: @(local.P_MoMo ? Loc.Get("Yes", lang) : Loc.Get("No", lang)) | VNPay: @(local.P_VNPay ? Loc.Get("Yes", lang) : Loc.Get("No", lang))</small>
                     }
                     else if (item is SaigonRide.Models.ForeignTourist tourist)
                     {
-                        <small>Passport: @tourist.Passport | ApplePay: @tourist.P_ApplePay | PayPal: @tourist.P_PayPal</small>
+                        <small>@Loc.Get("Passport", lang): @tourist.Passport | ApplePay: @(tourist.P_ApplePay ? Loc.Get("Yes", lang) : Loc.Get("No", lang)) | PayPal: @(tourist.P_PayPal ? Loc.Get("Yes", lang) : Loc.Get("No", lang))</small>
                     }
                 </td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.BankNum" class="btn btn-sm btn-info">View</a>
-                    <a asp-action="Edit" asp-route-id="@item.BankNum" class="btn btn-sm btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@item.BankNum" class="btn btn-sm btn-danger">Delete</a>
+                    <a asp-action="Details" asp-route-id="@item.BankNum" class="btn btn-sm btn-info">@Loc.Get("View", lang)</a>
+                    <a asp-action="Edit" asp-route-id="@item.BankNum" class="btn btn-sm btn-warning">@Loc.Get("Edit", lang)</a>
+                    <a asp-action="Delete" asp-route-id="@item.BankNum" class="btn btn-sm btn-danger">@Loc.Get("Delete", lang)</a>
                 </td>
             </tr>
         }

@@ -135,7 +135,17 @@ namespace SaigonRide.Services
                 ["SelectUserType"] = "-- Select User Type --",
                 ["SelectPaymentMethod"] = "-- Select Payment Method --",
                 ["TimeUsed"] = "Time Used",
-                ["ScanQRPay"] = "Scan QR code to pay"
+                ["ScanQRPay"] = "Scan QR code to pay",
+                ["CurrentMaxCapacity"] = "Current / Max Capacity",
+                ["UtilizationRatio"] = "Utilization Ratio",
+                ["Status"] = "Status",
+                ["Low"] = "Low",
+                ["Medium"] = "Medium",
+                ["High"] = "High",
+                ["LowInventory"] = "Low Inventory",
+                ["Edit"] = "Edit",
+                ["Delete"] = "Delete",
+                ["View"] = "View"
             },
             ["vn"] = new()
             {

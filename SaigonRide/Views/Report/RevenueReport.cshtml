@@ -1,4 +1,4 @@
-@model SaigonRide.Services.RevenueByVehicleReport
+@model IEnumerable<SaigonRide.Services.RevenueByVehicleReport>
 @inject SaigonRide.Services.ILocalizationService Loc
 
 @{
@@ -24,45 +24,50 @@
     </div>
 </div>
 
-@if (Model != null && Model.RentalCount > 0)
+@if (Model != null && Model.Any())
 {
-    <div class="card">
-        <div class="card-header">
-            <h5>@Loc.Get(Model.VehicleType ?? "", lang)</h5>
-        </div>
-        <div class="card-body">
-            <table class="table">
-                <tr>
-                    <td><strong>@Loc.Get("TotalRentals", lang):</strong></td>
-                    <td>@Model.RentalCount</td>
-                </tr>
-                <tr>
-                    <td><strong>@Loc.Get("TotalRevenue", lang):</strong></td>
-                    <td>@string.Format("{0:N0}", Model.TotalRevenue) VND</td>
-                </tr>
-                <tr>
-                    <td><strong>@Loc.Get("AverageFare", lang):</strong></td>
-                    <td>@string.Format("{0:N0}", Model.AverageFare) VND</td>
-                </tr>
-                <tr>
-                    <td><strong>@Loc.Get("TotalDiscountApplied", lang):</strong></td>
-                    <td>@string.Format("{0:N0}", Model.TotalDiscount) VND</td>
-                </tr>
-            </table>
-        </div>
+    <div class="row">
+        @foreach (var category in Model)
+        {
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">@Loc.Get(category.VehicleType ?? "", lang)</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td class="ps-0"><strong>@Loc.Get("Total Rentals", lang):</strong></td>
+                                <td class="text-end pe-0">@category.RentalCount</td>
+                            </tr>
+                            <tr>
+                                <td class="ps-0"><strong>@Loc.Get("Total Revenue", lang):</strong></td>
+                                <td class="text-end pe-0">@string.Format("{0:N0}", category.TotalRevenue) VND</td>
+                            </tr>
+                            <tr>
+                                <td class="ps-0"><strong>@Loc.Get("Average Fare", lang):</strong></td>
+                                <td class="text-end pe-0">@string.Format("{0:N0}", category.AverageFare) VND</td>
+                            </tr>
+                            <tr>
+                                <td class="ps-0"><strong>@Loc.Get("Total Discount Applied", lang):</strong></td>
+                                <td class="text-end pe-0 text-danger">@string.Format("{0:N0}", category.TotalDiscount) VND</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 }
 else
 {
     <div class="alert alert-info">
-        @Loc.Get("NoRentalData", lang)
+        @Loc.Get("No Rental Data", lang)
         <br/>
-
-        <small>@Loc.Get("SelectedRange", lang) @((DateTime?)ViewData["StartDate"])?.ToString("yyyy-MM-dd" ?? Loc.Get("NotSelected", lang)) to @((DateTime?)ViewData["EndDate"])?.ToString("yyyy-MM-dd" ?? Loc.Get("NotSelected", lang))</small>
-        <!--(DateTime?) casts to a nullable DateTime-->
+        <small>@Loc.Get("Selected Range", lang) @((DateTime?)ViewData["StartDate"])?.ToString("yyyy-MM-dd" ?? Loc.Get("Not Selected", lang)) to @((DateTime?)ViewData["EndDate"])?.ToString("yyyy-MM-dd" ?? Loc.Get("Not Selected", lang))</small>
     </div>
 }
 
 <div class="mt-3">
-    <a href="/" class="btn btn-secondary">@Loc.Get("BackToDashboard", lang)</a>
+    <a href="/" class="btn btn-secondary">@Loc.Get("Back To Dashboard", lang)</a>
 </div>

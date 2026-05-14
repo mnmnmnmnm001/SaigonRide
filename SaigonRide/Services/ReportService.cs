@@ -6,7 +6,7 @@ namespace SaigonRide.Services
 {
     public interface IReportService
     {
-        Task<RevenueByVehicleReport> GetRevenueByVehicleReport(DateTime startDate, DateTime endDate);
+        Task<List<RevenueByVehicleReport>> GetRevenueByVehicleReport(DateTime startDate, DateTime endDate);
         Task<List<StationInventoryReport>> GetStationInventoryReport();
     }
 
@@ -38,12 +38,10 @@ namespace SaigonRide.Services
             _context = context;
         }
 
-        public async Task<RevenueByVehicleReport> GetRevenueByVehicleReport(DateTime startDate, DateTime endDate)
+        public async Task<List<RevenueByVehicleReport>> GetRevenueByVehicleReport(DateTime startDate, DateTime endDate)
         {
             // Ensure we include the entire day range
-            // Start date: beginning of the day (00:00:00)
             var adjustedStartDate = startDate.Date;
-            // End date: beginning of the next day (so we include all of endDate)
             var adjustedEndDate = endDate.Date.AddDays(1);
 
             var completedRentals = await _context.Rentals
@@ -53,46 +51,25 @@ namespace SaigonRide.Services
 
             if (!completedRentals.Any())
             {
-                return new RevenueByVehicleReport
-                {
-                    VehicleType = "No Data",
-                    RentalCount = 0,
-                    TotalRevenue = 0,
-                    AverageFare = 0,
-                    TotalDiscount = 0
-                };
+                return new List<RevenueByVehicleReport>();
             }
 
-            // Group by vehicle type - filter out rentals with null vehicle or null type
-            var groupedByType = completedRentals
+            // Group by vehicle type and calculate stats for each group
+            var results = completedRentals
                 .Where(r => r.Vehicle != null && !string.IsNullOrEmpty(r.Vehicle.Type))
                 .GroupBy(r => r.Vehicle.Type)
-                .FirstOrDefault();
-
-            if (groupedByType == null)
-            {
-                return new RevenueByVehicleReport
+                .Select(g => new RevenueByVehicleReport
                 {
-                    VehicleType = "No Data",
-                    RentalCount = 0,
-                    TotalRevenue = 0,
-                    AverageFare = 0,
-                    TotalDiscount = 0
-                };
-            }
+                    VehicleType = g.Key,
+                    RentalCount = g.Count(),
+                    TotalRevenue = g.Sum(r => r.FinalFare),
+                    AverageFare = g.Count() > 0 ? g.Sum(r => r.FinalFare) / g.Count() : 0,
+                    TotalDiscount = g.Sum(r => r.DiscountApplied)
+                })
+                .OrderByDescending(r => r.TotalRevenue)
+                .ToList();
 
-            var totalRevenue = groupedByType.Sum(r => r.FinalFare);
-            var totalDiscount = groupedByType.Sum(r => r.DiscountApplied);
-            var rentalCount = groupedByType.Count();
-
-            return new RevenueByVehicleReport
-            {
-                VehicleType = groupedByType.Key,
-                RentalCount = rentalCount,
-                TotalRevenue = totalRevenue,
-                AverageFare = rentalCount > 0 ? totalRevenue / rentalCount : 0,
-                TotalDiscount = totalDiscount
-            };
+            return results;
         }
 
         public async Task<List<StationInventoryReport>> GetStationInventoryReport()

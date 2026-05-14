@@ -302,7 +302,20 @@ namespace SaigonRide.Controllers
         {
             ViewBag.Stations = await _context.Stations.ToListAsync();
             // Load vehicles that are in-transition (State == 1)
-            ViewBag.Vehicles = await _context.Vehicles.Where(v => v.State == 1).ToListAsync();
+            var vehicles = await _context.Vehicles.Where(v => v.State == 1).ToListAsync();
+            ViewBag.Vehicles = vehicles;
+
+            var startTimes = new Dictionary<string, string>();
+            foreach (var v in vehicles)
+            {
+                var transaction = await _transactionService.GetRentalTransactionByVehicleCodeAsync(v.Code);
+                if (transaction != null)
+                {
+                    startTimes[v.Code] = transaction.RentalStartTime.ToString("o");
+                }
+            }
+            ViewBag.StartTimes = startTimes;
+
             return View();
         }
 

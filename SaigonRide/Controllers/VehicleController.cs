@@ -37,9 +37,9 @@ namespace SaigonRide.Controllers
             return View(vehicle);
         }
 
-        // GET: Vehicle/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewBag.Stations = await _context.Stations.Select(s => s.Name).ToListAsync();
             return View();
         }
 
@@ -55,6 +55,7 @@ namespace SaigonRide.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Stations = await _context.Stations.Select(s => s.Name).ToListAsync();
             return View(vehicle);
         }
 
@@ -68,6 +69,7 @@ namespace SaigonRide.Controllers
             if (vehicle == null)
                 return NotFound();
 
+            ViewBag.Stations = await _context.Stations.Select(s => s.Name).ToListAsync();
             return View(vehicle);
         }
 
@@ -94,6 +96,7 @@ namespace SaigonRide.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Stations = await _context.Stations.Select(s => s.Name).ToListAsync();
             return View(vehicle);
         }
 

@@ -112,17 +112,20 @@ namespace SaigonRide.Controllers
         }
 
         // POST: Vehicle/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
+            if (string.IsNullOrEmpty(id))
+                return RedirectToAction("Index", "Home");
+
             var vehicle = await _context.Vehicles.FindAsync(id);
             if (vehicle != null)
             {
                 _context.Vehicles.Remove(vehicle);
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Home");
         }
 
         private bool VehicleExists(string id)

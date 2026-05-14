@@ -12,7 +12,7 @@ using SaigonRide.Data;
 namespace SaigonRide.Migrations
 {
     [DbContext(typeof(SaigonRideContext))]
-    [Migration("20260507_AddVehiclesToMatchCapacity")]
+    [Migration("20260508_AddVehiclesToMatchCapacity")]
     partial class AddVehiclesToMatchCapacity
     {
         /// <inheritdoc />

@@ -81,14 +81,14 @@
 
                 if (secondsLeft <= 0) {
                     clearInterval(countdownInterval);
-                    window.location.href = '@Url.Action("Index", "Main")';
+                    window.location.href = '/Main';
                 }
             }, 1000);
 
-            // Backup redirect after 7.5 seconds
+            // Backup redirect after 7.1 seconds
             setTimeout(function() {
-                window.location.href = '@Url.Action("Index", "Main")';
-            }, 7500);
+                window.location.href = '/Main';
+            }, 7100);
         }
     });
 </script>

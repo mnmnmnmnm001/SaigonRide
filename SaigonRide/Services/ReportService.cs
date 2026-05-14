@@ -40,9 +40,15 @@ namespace SaigonRide.Services
 
         public async Task<RevenueByVehicleReport> GetRevenueByVehicleReport(DateTime startDate, DateTime endDate)
         {
+            // Ensure we include the entire day range
+            // Start date: beginning of the day (00:00:00)
+            var adjustedStartDate = startDate.Date;
+            // End date: beginning of the next day (so we include all of endDate)
+            var adjustedEndDate = endDate.Date.AddDays(1);
+
             var completedRentals = await _context.Rentals
                 .Include(r => r.Vehicle)
-                .Where(r => r.Status == 1 && r.TimeStart >= startDate && r.TimeStart <= endDate)
+                .Where(r => r.Status == 1 && r.TimeStart >= adjustedStartDate && r.TimeStart < adjustedEndDate)
                 .ToListAsync();
 
             if (!completedRentals.Any())
@@ -57,9 +63,23 @@ namespace SaigonRide.Services
                 };
             }
 
-            var groupedByType = completedRentals.GroupBy(r => r.Vehicle.Type).FirstOrDefault();
+            // Group by vehicle type - filter out rentals with null vehicle or null type
+            var groupedByType = completedRentals
+                .Where(r => r.Vehicle != null && !string.IsNullOrEmpty(r.Vehicle.Type))
+                .GroupBy(r => r.Vehicle.Type)
+                .FirstOrDefault();
+
             if (groupedByType == null)
-                return new RevenueByVehicleReport();
+            {
+                return new RevenueByVehicleReport
+                {
+                    VehicleType = "No Data",
+                    RentalCount = 0,
+                    TotalRevenue = 0,
+                    AverageFare = 0,
+                    TotalDiscount = 0
+                };
+            }
 
             var totalRevenue = groupedByType.Sum(r => r.FinalFare);
             var totalDiscount = groupedByType.Sum(r => r.DiscountApplied);

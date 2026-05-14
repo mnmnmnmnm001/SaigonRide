@@ -97,21 +97,27 @@ namespace SaigonRide.Controllers
         // POST: User/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("BankNum,ChosenPaymentCode,Payed")] User user)
+        public async Task<IActionResult> Edit(string id, string chosenPaymentCode, double payed)
         {
-            if (id != user.BankNum)
+            if (id == null)
+                return NotFound();
+
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
                 return NotFound();
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    user.ChosenPaymentCode = chosenPaymentCode;
+                    user.Payed = payed;
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.BankNum))
+                    if (!UserExists(id))
                         return NotFound();
                     throw;
                 }
@@ -134,17 +140,20 @@ namespace SaigonRide.Controllers
         }
 
         // POST: User/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
+            if (string.IsNullOrEmpty(id))
+                return RedirectToAction("Index", "Home");
+
             var user = await _context.Users.FindAsync(id);
             if (user != null)
             {
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Home");
         }
 
         private bool UserExists(string id)

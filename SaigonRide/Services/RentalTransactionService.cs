@@ -88,12 +88,33 @@ namespace SaigonRide.Services
                 if (transaction == null)
                     return false;
 
+                // Decrypt values to create a Rental record
+                var decryptedBankNumber = _encryptionService.Decrypt(transaction.EncryptedBankNumber);
+                var decryptedVehicleCode = _encryptionService.Decrypt(transaction.EncryptedVehicleCode);
+
+                // Create a Rental record for reporting purposes
+                var rental = new Rental
+                {
+                    UserId = decryptedBankNumber,
+                    VehicleId = decryptedVehicleCode,
+                    StartStationId = transaction.StationId,
+                    EndStationId = returnStationId,
+                    TimeStart = transaction.RentalStartTime,
+                    TimeEnd = DateTime.Now,
+                    CalculatedFare = transaction.MoneyRented,
+                    DiscountApplied = Math.Max(0, -refund), // If refund is positive, it's a discount
+                    FinalFare = transaction.MoneyRented + additionalCharge - Math.Max(0, refund), // Final fare after charges/refunds
+                    Status = 1 // Completed
+                };
+
+                _context.Rentals.Add(rental);
                 _context.RentalTransactions.Remove(transaction);
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger?.LogError(ex, "Error completing rental transaction {TransactionId}", transactionId);
                 return false;
             }
         }

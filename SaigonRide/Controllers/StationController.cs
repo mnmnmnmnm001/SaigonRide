@@ -109,7 +109,7 @@ namespace SaigonRide.Controllers
         }
 
         // POST: Station/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -119,7 +119,7 @@ namespace SaigonRide.Controllers
                 _context.Stations.Remove(station);
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Home");
         }
 
         private bool StationExists(int id)

@@ -11,7 +11,7 @@
         <form asp-action="Edit" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <input type="hidden" name="BankNum" value="@Model.BankNum" />
+            <input type="hidden" name="id" value="@Model.BankNum" />
 
             <div class="form-group mb-3">
                 <label for="BankNum" class="form-label">Bank Number</label>
@@ -19,13 +19,13 @@
             </div>
 
             <div class="form-group mb-3">
-                <label for="ChosenPaymentCode" class="form-label">Preferred Payment Method</label>
-                <input type="text" id="ChosenPaymentCode" name="ChosenPaymentCode" value="@Model.ChosenPaymentCode" class="form-control" required />
+                <label for="chosenPaymentCode" class="form-label">Preferred Payment Method</label>
+                <input type="text" id="chosenPaymentCode" name="chosenPaymentCode" value="@Model.ChosenPaymentCode" class="form-control" required />
             </div>
 
             <div class="form-group mb-3">
-                <label for="Payed" class="form-label">Total Paid (VND)</label>
-                <input type="number" id="Payed" name="Payed" value="@Model.Payed" class="form-control" step="0.01" required />
+                <label for="payed" class="form-label">Total Paid (VND)</label>
+                <input type="number" id="payed" name="payed" value="@Model.Payed" class="form-control" step="0.01" required />
             </div>
 
             <button type="submit" class="btn btn-primary">Update User</button>

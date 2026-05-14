@@ -36,13 +36,15 @@ There is only 1 admin account currently
 
 4.2.1  If Invalid information, the screen will show where is the invalid informaton
 
-4.2.2  If correct information, bank account of user that have been kept with vehicle code will be automatically deduct user money depending on how many minutes since showed receipt screen and discount depending on current station capacity/max capacity < 20% (not implemented for API bank)
+4.2.2  If correct information, the system will use bank account of user that have been entered to show a simulation QR code
 
-5.2 The system will sutomatically return to the main screen after 7 seconds after success transaction
+5.2 After user confirm return (simulation, not implemented for API bank), the system will calculate fare depending on how many minutes since rent and discount depending on current station capacity/max capacity < 20%
+
+6.2 The system will then show receipt and sutomatically return to the main screen after 7 seconds after success transaction
 
 ## Admin >|<
 2.3  If user choose login as admin, the system will show login screen
 
 3.3  User will then enter all information (all are necessary) and submit
 
-4.3  If correct information, the user can now access all admin functionality, user can see revenue report or station report. They can also CRUD: user (transaction), station, vehicle.
+4.3  If correct information, the user can now access all admin functionality, user can see revenue report or station report. They can also CRUD: user (transaction), station, vehicle

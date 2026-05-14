@@ -4,6 +4,8 @@
 2.  Clone the repository
 3.  Run ```Program.cs```
 4.  Wait ~33 second (yes, it's long if your computer is weak) for initalization
+
+Or access the live website via link: http://saigonridef404.runasp.net/
 	
 `-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`-`
 # |/|\\| Admin login infromation
